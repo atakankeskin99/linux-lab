@@ -1,4 +1,4 @@
-# 05 — First Deployed App: X600 System Dashboard
+# 04 — First Deployed App: X600 System Dashboard
 
 After the Linux environment became usable remotely, the project needed something of its own running on top of it.
 
