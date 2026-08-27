@@ -32,6 +32,12 @@ Termux SSH listened on port `8022`, so the Windows connection pattern became:
 ssh -p 8022 <TERMUX_USER>@<PHONE_IP>
 ```
 
+A successful SSH session from the Windows PC provided direct access to the Termux environment on the X600.
+
+![SSH access from Windows to the OMIX X600](../assets/x600-ssh-remote-access.png)
+
+*Remote shell access from Windows to the X600 over SSH. The session confirms the Termux user, AArch64 architecture, and Termux home directory.*
+
 This removed the Linux laptop from the control path.
 
 ```text
@@ -69,6 +75,12 @@ Windows then connected with TigerVNC Viewer to:
 ```text
 <PHONE_IP>:5901
 ```
+
+This provided full remote access to the XFCE desktop running on the X600.
+
+![XFCE desktop accessed remotely through TigerVNC](../assets/x600-vnc-remote-access.png)
+
+*The X600 XFCE desktop viewed and controlled remotely from Windows through TigerVNC.*
 
 ## XFCE VNC startup environment
 
