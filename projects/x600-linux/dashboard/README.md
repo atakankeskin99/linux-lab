@@ -59,17 +59,18 @@ From the dashboard directory:
 
 ```bash
 python app.py
-
+```
 
 The dashboard can then be accessed from another device on the same LAN using:
 
+```text
 http://<X600-IP>:5000
+```
 
-
-Related Investigation
+## Related Investigation
 
 The dashboard was also used while observing process growth and service behavior under heavier workloads.
 
 See:
 
-../docs/06-android-process-management-investigation.md
+[Android Process Management Investigation](../docs/06-android-process-management-investigation.md)
