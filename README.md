@@ -59,7 +59,7 @@ The project started as a simple way to move files between devices on the same LA
 - local HTTPS experiments
 - basic service lifecycle management
 
-→ `projects/lan-drop/`
+→ [`projects/lan-drop/`](projects/lan-drop/)
 
 ---
 
@@ -82,7 +82,7 @@ The project currently explores:
 
 One of the ongoing investigations examines why SSH, Flask, VNC, XFCE, and Firefox behave differently when running simultaneously under Android's process-management environment.
 
-→ `projects/x600-linux/`
+→ [`projects/x600-linux/`](projects/x600-linux/)
 
 ---
 
@@ -101,9 +101,7 @@ It reports basic details such as:
 - Memory usage
 - Disk usage
 
-→ `utilities/sysinfo-lite/`
-
-See the [sysinfo-lite README](utilities/sysinfo-lite/README.md) for usage details.
+→ [`utilities/sysinfo-lite/`](utilities/sysinfo-lite/)
 
 ---
 
