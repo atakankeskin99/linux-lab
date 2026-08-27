@@ -58,6 +58,16 @@ The service is intentionally **not enabled at boot**. It runs only when started 
 
 The Linux laptop acts as the host. Windows, iOS, Android, and other devices on the LAN act as clients through a web browser.
 
+<p align="center">
+  <img src="../assets/lan-drop-ui.png"
+       alt="LAN Drop web interface showing multi-file upload, download, and delete actions"
+       width="700">
+</p>
+
+<p align="center">
+  <em>LAN Drop web interface for local file transfer.</em>
+</p>
+
 ## Request flow
 
 ```text
