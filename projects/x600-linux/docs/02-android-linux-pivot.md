@@ -1,4 +1,4 @@
-# 03 — Pivot to Android-Hosted Linux
+# 02 — Pivot to Android-Hosted Linux
 
 Instead of replacing the Android kernel, the project changed the architecture:
 
