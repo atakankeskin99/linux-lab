@@ -1,4 +1,4 @@
-# 02 — Native Linux Attempt
+# 01 — Native Linux Attempt
 
 After working with the OMIX X600, the next question was more ambitious:
 
