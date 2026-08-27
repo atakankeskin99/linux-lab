@@ -73,6 +73,10 @@ Termux:X11 then displayed the XFCE session on the phone.
 
 This was the first point where the original goal became visibly real: the phone displayed a conventional Linux desktop with applications, file manager, terminal and Firefox.
 
+![XFCE running on the OMIX X600 through Termux:X11](../assets/x600-xfce-phone.png)
+
+*XFCE running directly on the X600 through Termux:X11. The Android interface and Termux:X11 controls remain visible around the Linux desktop.*
+
 ## Why the pivot was valuable
 
 The pivot did not erase the native-kernel experiment.
