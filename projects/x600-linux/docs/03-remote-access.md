@@ -1,4 +1,4 @@
-# 04 — Remote Access: SSH + VNC
+# 03 — Remote Access: SSH + VNC
 
 Once the XFCE desktop worked on the phone, the next goal was to stop typing on a phone keyboard.
 
