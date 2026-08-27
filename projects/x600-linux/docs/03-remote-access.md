@@ -1,104 +1,94 @@
-# 04 — Remote Access: SSH + VNC
+# 03 — Pivot to Android-Hosted Linux
 
-Once the XFCE desktop worked on the phone, the next goal was to stop typing on a phone keyboard.
+Instead of replacing the Android kernel, the project changed the architecture:
 
-The lab moved toward remote administration from a Windows PC.
+> Keep the kernel that already boots and supports the X600 hardware. Put the Linux userspace and desktop above it.
 
-## SSH directly into Termux
+This was the turning point of the lab.
 
-OpenSSH was installed inside Termux:
+## Chosen stack
 
-```bash
-pkg install openssh
-passwd
-sshd
-```
-
-The Termux username was discovered with:
-
-```bash
-whoami
-```
-
-and the phone's Wi-Fi address with:
-
-```bash
-ip addr show wlan0
-```
-
-Termux SSH listened on port `8022`, so the Windows connection pattern became:
-
-```bash
-ssh -p 8022 <TERMUX_USER>@<PHONE_IP>
-```
-
-This removed the Linux laptop from the control path.
+The working stack became:
 
 ```text
-Before:
-Windows → SSH → Linux laptop → ADB → phone
-
-After:
-Windows → SSH → phone / Termux
+OMIX X600 hardware
+      ↓
+Android kernel / vendor drivers
+      ↓
+Termux userspace
+      ↓
+XFCE4 desktop
+      ↓
+Termux:X11 or TigerVNC
 ```
 
-## VNC for the graphical desktop
+DroidDesk was used to automate much of the Linux desktop setup.
 
-TigerVNC was added later so the XFCE desktop could be controlled from Windows with a normal keyboard and mouse.
+## Compatibility checks
 
-Server package:
+Before installation, the device was queried with ADB:
 
 ```bash
-pkg install tigervnc
+adb shell getprop ro.product.cpu.abi
+adb shell getprop ro.build.version.release
+adb shell getprop ro.build.version.sdk
+adb shell getprop ro.hardware
 ```
 
-Password:
-
-```bash
-vncpasswd
-```
-
-The final session used display `:1`, which maps to TCP port `5901`:
-
-```bash
-vncserver -localhost no -geometry 1280x720 -depth 24 :1
-```
-
-Windows then connected with TigerVNC Viewer to:
+Observed values:
 
 ```text
-<PHONE_IP>:5901
+arm64-v8a
+12
+31
+mt6768
 ```
 
-## XFCE VNC startup environment
+This satisfied the important ARM64 requirement.
 
-A working `~/.vnc/xstartup` required the graphics/environment variables used by DroidDesk rather than only a bare `startxfce4` call.
+## Installation flow
 
-The important idea was that Android-hosted graphics have different assumptions from a normal desktop Linux installation.
+The software path was:
 
-## Recovery helper
+1. F-Droid
+2. Termux
+3. Termux:X11
+4. DroidDesk setup script
+5. XFCE4 as the desktop environment
+6. Ubuntu PRoot environment
 
-A helper script was created so a broken or restarted GUI session could be recovered with one command:
+The DroidDesk installer detected the X600 and selected XFCE4 by default.
+
+Because the device is not Adreno-based, the graphics path fell back away from the ideal Turnip/Adreno acceleration route. This produced warnings around Mesa/GL during startup, but the XFCE desktop still came up successfully.
+
+## First successful desktop
+
+The desktop was started with:
 
 ```bash
-bash ~/start-vnc.sh
+bash ~/start-x11.sh
 ```
 
-The version tracked in this repository is in [`scripts/start-vnc.sh`](../scripts/start-vnc.sh).
+Termux:X11 then displayed the XFCE session on the phone.
 
-## Process-lifecycle problem
+This was the first point where the original goal became visibly real: the phone displayed a conventional Linux desktop with applications, file manager, terminal and Firefox.
 
-SSH and VNC sometimes disappeared because Android background management killed Termux processes.
+![XFCE running on the OMIX X600 through Termux:X11](../assets/x600-xfce-phone.png)
 
-Mitigations explored:
+*XFCE running directly on the X600 through Termux:X11. The Android interface and Termux:X11 controls remain visible around the Linux desktop.*
 
-```bash
-termux-wake-lock
-pkg install termux-services
-sv-enable sshd
-sv up sshd
+## Why the pivot was valuable
+
+The pivot did not erase the native-kernel experiment.
+
+It clarified the system layers:
+
+```text
+Native Linux attempt:
+replace / deeply modify the platform below userspace
+
+Android-hosted Linux:
+reuse the working platform and replace the experience above it
 ```
 
-and Android battery settings were changed so Termux / Termux:X11 could run without aggressive background restrictions.
-
-This remains one of the important unfinished stability topics in the lab.
+Both are useful, but they solve different problems.
