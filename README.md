@@ -183,3 +183,9 @@ A debugging log can show **why it works**.
 And sometimes a failed experiment teaches more about the underlying system than the final solution.
 
 As the lab grows, this repository will continue to document that process.
+
+---
+
+## License
+
+This repository is licensed under the [MIT License](LICENSE).
