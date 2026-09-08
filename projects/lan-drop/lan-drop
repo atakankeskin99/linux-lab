@@ -1,0 +1,62 @@
+#!/bin/bash
+
+
+HOTSPOT="LAN-Drop"
+SERVICE="lan-drop"
+URL="https://10.42.0.1:8080"
+
+
+
+case "$1" in
+   
+    start)
+        echo "Starting LAN-Drop..."
+
+        nmcli connection up "$HOTSPOT" || exit 1
+
+        echo "Hotspot ready."
+
+        sudo systemctl start "$SERVICE" || exit 1
+
+        echo
+        echo "LAN-Drop is ready."
+        echo "Wi-Fi : $HOTSPOT"
+        echo "URL   : $URL"
+
+        ;;
+ 
+    stop)
+        echo "Stopping LAN-Drop..."
+
+        sudo systemctl stop "$SERVICE"
+        
+        nmcli connection down "$HOTSPOT"
+
+        echo "LAN-Drop stopped."
+
+        ;;
+
+   status)
+
+       echo "=== Hotspot ==="
+  
+       nmcli -f NAME,TYPE,DEVICE connection show --active | grep "$HOTSPOT" || echo "Hotspot inactive"
+
+       echo 
+  
+       echo "=== Service ==="
+   
+       systemctl is-active "$SERVICE"
+
+       ;;
+
+ *) 
+
+
+   echo "Usage: $0 {start|stop|status}"
+
+   exit 1
+
+   ;;
+
+esac
