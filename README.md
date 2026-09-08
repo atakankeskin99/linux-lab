@@ -48,18 +48,27 @@ For that reason, debugging sessions and unsuccessful approaches are intentionall
 
 A lightweight local-network file transfer service hosted on a Linux machine.
 
-The project started as a simple way to move files between devices on the same LAN and gradually became an experiment involving:
+The project started as a simple way to move files between devices on the same LAN and gradually expanded into experiments with both application and network infrastructure.
 
-- HTTP file transfer
-- multi-file uploads
-- file management
-- Linux services
-- systemd
+The project currently includes and explores:
+
+- HTTP/HTTPS file transfer
+- multi-file uploads and file management
+- PIN and session-based access
+- Linux service management with systemd
 - SSH administration
-- local HTTPS experiments
-- basic service lifecycle management
+- local TLS and certificate trust
+- Wi-Fi access-point mode
+- NetworkManager
+- self-hosted local networking
+- Bash-based service and network lifecycle control
 
-→ [`projects/lan-drop/`](projects/lan-drop/)
+The original mode uses an existing LAN for convenient file transfer. A later experiment, **LAN Drop v2**, allows the Linux host to create its own Wi-Fi network and provide both the network infrastructure and the application service.
+
+The experiment worked, but also exposed an important trade-off: removing the dependency on an existing LAN made the system more independent while making the common user workflow less convenient.
+
+→ [`LAN Drop v1 documentation`](projects/lan-drop/docs/01-lan-drop.md)  
+→ [`LAN Drop v2 — Self-Hosted Network Mode`](projects/lan-drop/docs/01.1-lan-drop-v2.md)
 
 ---
 
@@ -119,9 +128,12 @@ This repository currently touches several areas:
 
 **Networking**
 - LAN addressing
+- Wi-Fi access-point mode
+- NetworkManager
+- local network creation
 - SSH
 - ports and sockets
-- HTTP
+- HTTP/HTTPS
 - remote administration
 - VNC
 
@@ -149,7 +161,12 @@ linux-lab/
 │
 ├── projects/
 │   ├── lan-drop/
-│   │   └── ...
+│   │   ├── assets/
+│   │   ├── docs/
+│   │   │   ├── 01-lan-drop.md
+│   │   │   └── 01.1-lan-drop-v2.md
+│   │   └── scripts/
+│   │       └── lan-drop
 │   │
 │   └── x600-linux/
 │       ├── README.md
@@ -163,10 +180,10 @@ linux-lab/
 │       ├── README.md
 │       └── sysinfo.sh
 │
+├── LICENSE
 └── README.md
 ```
 
-Each project and utility contains its own documentation and technical notes.
 
 ---
 
