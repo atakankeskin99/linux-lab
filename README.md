@@ -114,6 +114,26 @@ It reports basic details such as:
 
 ---
 
+### WireGuard Remote Access
+
+A remote-access networking lab built around WireGuard and a public VPS to reach a Linux host behind CGNAT.
+
+The project explores:
+
+- CGNAT and inbound connectivity limitations
+- WireGuard peer routing and `AllowedIPs`
+- Linux IP forwarding
+- `iptables` INPUT and FORWARD chains
+- UDP traversal and persistent keepalives
+- cloud networking and firewall debugging
+- persistent VPN services with systemd
+
+Rather than using a higher-level solution such as Tailscale, the network was built manually to expose and understand the underlying routing, firewall, and WireGuard mechanisms.
+
+- [`docs/01-remote-access-through-cgnat.md`](projects/wireguard-remote-access/docs/01-remote-access-through-cgnat.md) — full investigation, architecture, implementation, troubleshooting, and validation
+
+---
+
 ## What I Am Learning
 
 This repository currently touches several areas:
@@ -168,12 +188,17 @@ linux-lab/
 │   │   └── scripts/
 │   │       └── lan-drop
 │   │
-│   └── x600-linux/
-│       ├── README.md
-│       ├── ROADMAP.md
-│       ├── dashboard/
-│       ├── docs/
-│       └── scripts/
+│   ├── x600-linux/
+│   │   ├── README.md
+│   │   ├── ROADMAP.md
+│   │   ├── dashboard/
+│   │   ├── docs/
+│   │   └── scripts/
+│   │
+│   └── wireguard-remote-access/
+│       ├── assets/
+│       └── docs/
+│           └── 01-remote-access-through-cgnat.md
 │
 ├── utilities/
 │   └── sysinfo-lite/
