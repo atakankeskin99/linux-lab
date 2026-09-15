@@ -82,12 +82,12 @@ The second architecture re-used the already-working Android kernel and moved the
 
 ## Repository map
 
-- [`docs/01-lan-drop.md`](docs/01-lan-drop.md) — the file-transfer project that accidentally became deployment infrastructure
-- [`docs/02-native-linux-attempt.md`](docs/02-native-linux-attempt.md) — kernel build attempt, failures, and lessons
-- [`docs/03-android-linux-pivot.md`](docs/03-android-linux-pivot.md) — moving to Termux/X11/DroidDesk
-- [`docs/04-remote-access.md`](docs/04-remote-access.md) — SSH + VNC control from Windows
-- [`docs/05-dashboard.md`](docs/05-dashboard.md) — the first application deployed on the phone-hosted Linux environment
-- [`docs/06-android-process-management-investigation.md`](docs/06-android-process-management-investigation.md) — measured debugging investigation into SSH/VNC/XFCE/Firefox process pressure on Android 12
+
+- [`docs/01-native-linux-attempt.md`](docs/01-native-linux-attempt.md) — kernel build attempt, failures, and lessons
+- [`docs/02-android-linux-pivot.md`](docs/02-android-linux-pivot.md) — moving to Termux/X11/DroidDesk
+- [`docs/03-remote-access.md`](docs/03-remote-access.md) — SSH + VNC control from Windows
+- [`docs/04-dashboard.md`](docs/04-dashboard.md) — the first application deployed on the phone-hosted Linux environment
+- [`docs/05-android-process-management-investigation.md`](docs/05-android-process-management-investigation.md) — measured debugging investigation into SSH/VNC/XFCE/Firefox process pressure on Android 12
 - [`scripts/start-vnc.sh`](scripts/start-vnc.sh) — helper script used to bring the XFCE/VNC session back up
 - [`dashboard/app.py`](dashboard/app.py) — Android/Termux-friendly Flask dashboard
 

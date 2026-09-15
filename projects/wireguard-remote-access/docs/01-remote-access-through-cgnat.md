@@ -34,7 +34,7 @@ This worked successfully for both ICMP and SSH:
 
 ```powershell
 ping 10.10.10.1
-ssh atakan@10.10.10.1
+ssh <user>@10.10.10.1
 ```
 
 That proved the basic WireGuard configuration was working correctly.
@@ -469,7 +469,7 @@ Packets: Sent = 4, Received = 4, Lost = 0 (0% loss)
 SSH was then opened directly to the same overlay address:
 
 ```powershell
-ssh atakan@10.20.20.2
+ssh <user>@10.20.20.2
 ```
 
 The connection succeeded.
@@ -516,7 +516,7 @@ After it returned:
 ```powershell
 ping 10.20.20.1
 ping 10.20.20.2
-ssh atakan@10.20.20.2
+ssh <user>@10.20.20.2
 ```
 
 all succeeded without rebuilding the VPS configuration manually.
