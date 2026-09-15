@@ -130,7 +130,10 @@ The project explores:
 
 Rather than using a higher-level solution such as Tailscale, the network was built manually to expose and understand the underlying routing, firewall, and WireGuard mechanisms.
 
-- [`docs/01-remote-access-through-cgnat.md`](projects/wireguard-remote-access/docs/01-remote-access-through-cgnat.md) — full investigation, architecture, implementation, troubleshooting, and validation
+After the manual WireGuard + VPS setup had completed its learning objective, the public VPS was retired and Tailscale was adopted as the practical day-to-day remote-access layer. The follow-up documents direct peer connectivity, DERP fallback, MagicDNS, reboot persistence, and lid-closed SSH access.
+
+- [`docs/01-remote-access-through-cgnat.md`](projects/wireguard-remote-access/docs/01-remote-access-through-cgnat.md) — manual WireGuard + public VPS architecture, troubleshooting, and validation
+- [`docs/02-tailscale-operational-follow-up.md`](projects/wireguard-remote-access/docs/02-tailscale-operational-follow-up.md) — operational follow-up using Tailscale after the manual lab completed its mission
 
 ---
 
@@ -198,7 +201,8 @@ linux-lab/
 │   └── wireguard-remote-access/
 │       ├── assets/
 │       └── docs/
-│           └── 01-remote-access-through-cgnat.md
+│           ├── 01-remote-access-through-cgnat.md
+│           └── 02-tailscale-operational-follow-up.md
 │
 ├── utilities/
 │   └── sysinfo-lite/
