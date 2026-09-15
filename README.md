@@ -239,9 +239,6 @@ linux-lab/
 │   └── wireguard-remote-access/
 │       ├── README.md
 │       ├── assets/
-│       │   ├── wireguard-ssh-validation.png
-│       │   ├── wireguard-vps-peers.png
-│       │   └── wireguard-windows-client.png
 │       └── docs/
 │           ├── 01-remote-access-through-cgnat.md
 │           └── 02-tailscale-operational-follow-up.md
