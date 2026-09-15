@@ -1,4 +1,11 @@
+
 # Linux Lab
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+![Platform](https://img.shields.io/badge/platform-Linux-blue)
+![Status](https://img.shields.io/badge/status-active-success)
+![Learning Lab](https://img.shields.io/badge/type-learning%20lab-purple)
+
 
 A growing collection of hands-on Linux experiments, small projects, system configurations, and debugging notes created while learning Linux, networking, and infrastructure.
 
