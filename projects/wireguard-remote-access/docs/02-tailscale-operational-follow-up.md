@@ -496,15 +496,15 @@ Build the remote-access path manually with:
 
 ```text
 CGNAT
-  ->
+  ↓
 public VPS
-  ->
+  ↓
 WireGuard
-  ->
+  ↓
 routing
-  ->
+  ↓
 firewall rules
-  ->
+  ↓
 SSH
 ```
 
@@ -514,9 +514,9 @@ Replace the permanently maintained lab infrastructure with:
 
 ```text
 Tailscale
-  ->
+  ↓
 MagicDNS
-  ->
+  ↓
 OpenSSH
 ```
 
