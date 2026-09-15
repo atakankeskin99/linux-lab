@@ -144,6 +144,22 @@ It reports basic details such as:
 
 ---
 
+
+
+### Port Inspector
+
+A lightweight Linux CLI utility for inspecting listening IPv4 TCP ports and identifying the processes behind them.
+
+It currently provides:
+
+- listening port discovery
+- bind-address inspection
+- basic scope classification
+- process and PID identification
+- support for multiple processes on the same socket
+- filtering by a specific port
+
+→ [`utilities/port-inspector/`](utilities/port-inspector/)
 ## What I Am Learning
 
 This repository currently touches several areas:
@@ -207,21 +223,37 @@ linux-lab/
 │   ├── x600-linux/
 │   │   ├── README.md
 │   │   ├── ROADMAP.md
+│   │   ├── assets/
 │   │   ├── dashboard/
+│   │   │   ├── README.md
+│   │   │   └── app.py
 │   │   ├── docs/
+│   │   │   ├── 01-native-linux-attempt.md
+│   │   │   ├── 02-android-linux-pivot.md
+│   │   │   ├── 03-remote-access.md
+│   │   │   ├── 04-dashboard.md
+│   │   │   └── 05-android-process-management-investigation.md
 │   │   └── scripts/
+│   │       └── start-vnc.sh
 │   │
 │   └── wireguard-remote-access/
 │       ├── README.md
 │       ├── assets/
+│       │   ├── wireguard-ssh-validation.png
+│       │   ├── wireguard-vps-peers.png
+│       │   └── wireguard-windows-client.png
 │       └── docs/
 │           ├── 01-remote-access-through-cgnat.md
 │           └── 02-tailscale-operational-follow-up.md
 │
 ├── utilities/
-│   └── sysinfo-lite/
+│   ├── sysinfo-lite/
+│   │   ├── README.md
+│   │   └── sysinfo.sh
+│   │
+│   └── port-inspector/
 │       ├── README.md
-│       └── sysinfo.sh
+│       └── port_inspector.py
 │
 ├── LICENSE
 └── README.md
