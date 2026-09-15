@@ -47,7 +47,3 @@ Extends the project by turning the Linux host into its own Wi-Fi access point, a
 The current service management script is available here:
 
 [`scripts/lan-drop`](scripts/lan-drop)
-
----
-
-Part of the [Linux Lab](../../README.md).
