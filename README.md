@@ -74,8 +74,7 @@ The original mode uses an existing LAN for convenient file transfer. A later exp
 
 The experiment worked, but also exposed an important trade-off: removing the dependency on an existing LAN made the system more independent while making the common user workflow less convenient.
 
-→ [`LAN Drop v1 documentation`](projects/lan-drop/docs/01-lan-drop.md)  
-→ [`LAN Drop v2 — Self-Hosted Network Mode`](projects/lan-drop/docs/01.1-lan-drop-v2.md)
+→ [`projects/lan-drop/`](projects/lan-drop/)
 
 ---
 
@@ -102,24 +101,7 @@ One of the ongoing investigations examines why SSH, Flask, VNC, XFCE, and Firefo
 
 ---
 
-## Utilities
 
-### sysinfo-lite
-
-A lightweight Bash utility that displays essential Linux system information directly in the terminal.
-
-It reports basic details such as:
-
-- Hostname
-- Current user
-- Kernel version
-- Uptime
-- Memory usage
-- Disk usage
-
-→ [`utilities/sysinfo-lite/`](utilities/sysinfo-lite/)
-
----
 
 ### WireGuard Remote Access
 
@@ -139,8 +121,26 @@ Rather than using a higher-level solution such as Tailscale, the network was bui
 
 After the manual WireGuard + VPS setup had completed its learning objective, the public VPS was retired and Tailscale was adopted as the practical day-to-day remote-access layer. The follow-up documents direct peer connectivity, DERP fallback, MagicDNS, reboot persistence, and lid-closed SSH access.
 
-- [`docs/01-remote-access-through-cgnat.md`](projects/wireguard-remote-access/docs/01-remote-access-through-cgnat.md) — manual WireGuard + public VPS architecture, troubleshooting, and validation
-- [`docs/02-tailscale-operational-follow-up.md`](projects/wireguard-remote-access/docs/02-tailscale-operational-follow-up.md) — operational follow-up using Tailscale after the manual lab completed its mission
+→ [`projects/wireguard-remote-access/`](projects/wireguard-remote-access/)
+
+---
+
+## Utilities
+
+### sysinfo-lite
+
+A lightweight Bash utility that displays essential Linux system information directly in the terminal.
+
+It reports basic details such as:
+
+- Hostname
+- Current user
+- Kernel version
+- Uptime
+- Memory usage
+- Disk usage
+
+→ [`utilities/sysinfo-lite/`](utilities/sysinfo-lite/)
 
 ---
 
@@ -166,6 +166,10 @@ This repository currently touches several areas:
 - HTTP/HTTPS
 - remote administration
 - VNC
+- WireGuard
+- VPN routing
+- CGNAT
+- Tailscale
 
 **Software**
 - Python
@@ -181,6 +185,7 @@ This repository currently touches several areas:
 - debugging
 - Android/Linux interaction
 - service orchestration
+- systemd
 
 ---
 
@@ -191,6 +196,7 @@ linux-lab/
 │
 ├── projects/
 │   ├── lan-drop/
+│   │   ├── README.md
 │   │   ├── assets/
 │   │   ├── docs/
 │   │   │   ├── 01-lan-drop.md
@@ -206,6 +212,7 @@ linux-lab/
 │   │   └── scripts/
 │   │
 │   └── wireguard-remote-access/
+│       ├── README.md
 │       ├── assets/
 │       └── docs/
 │           ├── 01-remote-access-through-cgnat.md
