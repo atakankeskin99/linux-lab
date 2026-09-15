@@ -1,5 +1,9 @@
 # X600 System Dashboard
 
+![Python](https://img.shields.io/badge/Python-3.x-blue)
+![Framework](https://img.shields.io/badge/framework-Flask-black)
+![Platform](https://img.shields.io/badge/platform-Android%20Linux-green)
+
 A lightweight Flask-based dashboard created to monitor the X600 Linux environment from another device on the local network.
 
 The dashboard was built as part of the X600 Linux experiment to make system state easier to observe while testing SSH, VNC, XFCE, and other services.
