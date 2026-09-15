@@ -161,13 +161,13 @@ tailscale ip -4
 showed the Linux machine on the tailnet with the address:
 
 ```text
-100.106.144.23
+100.x.x.x
 ```
 
 The hostname was:
 
 ```text
-atakan-x550ca
+linux-mint-node
 ```
 
 ---
@@ -179,14 +179,14 @@ Tailscale was also installed on the Windows machine and authenticated into the s
 The resulting node addresses were:
 
 ```text
-Linux Mint -> 100.106.144.23
-Windows    -> 100.90.57.66
+Linux Mint -> 100.x.x.x
+Windows    -> 100.y.y.y
 ```
 
 With both machines on the same local network, `tailscale status` showed a direct connection:
 
 ```text
-active; direct 192.168.1.101:41641
+active; direct 192.168.1.x:41641
 ```
 
 This confirmed that Tailscale could establish a peer-to-peer path without relaying traffic when the network conditions allowed it.
@@ -220,7 +220,7 @@ Windows
 The Windows client then reached the Linux Mint Tailscale address:
 
 ```powershell
-ping 100.106.144.23
+ping 100.x.x.x
 ```
 
 and received replies successfully.
@@ -228,7 +228,7 @@ and received replies successfully.
 SSH was then opened through the Tailscale overlay:
 
 ```powershell
-ssh atakan@100.106.144.23
+ssh user@100.x.x.x
 ```
 
 The connection succeeded.
@@ -236,7 +236,7 @@ The connection succeeded.
 The Linux host recorded the source as:
 
 ```text
-100.90.57.66
+100.y.y.y
 ```
 
 which was the Windows machine's Tailscale address.
@@ -258,13 +258,13 @@ active; relay "fra"
 and:
 
 ```bash
-tailscale ping 100.90.57.66
+tailscale ping 100.y.y.y
 ```
 
 returned results similar to:
 
 ```text
-pong from desktop-clgj3km (...) via DERP(fra)
+pong from windows-client (...) via DERP(fra)
 ```
 
 followed by:
@@ -316,25 +316,25 @@ The next improvement was to remove the need to remember the Tailscale IP address
 Instead of:
 
 ```powershell
-ssh atakan@100.106.144.23
+ssh user@100.x.x.x
 ```
 
 the Windows machine could use:
 
 ```powershell
-ssh atakan@atakan-x550ca
+ssh user@linux-mint-node
 ```
 
 MagicDNS resolved:
 
 ```text
-atakan-x550ca
+linux-mint-node
 ```
 
 to:
 
 ```text
-100.106.144.23
+100.x.x.x
 ```
 
 This means the remote access workflow no longer depends on:
@@ -363,7 +363,7 @@ After the machine started again, no manual `tailscale up` command was required.
 From Windows:
 
 ```powershell
-ping atakan-x550ca
+ping linux-mint-node
 ```
 
 resolved the MagicDNS name and reached the host again.
@@ -371,7 +371,7 @@ resolved the MagicDNS name and reached the host again.
 A new SSH session was then opened:
 
 ```powershell
-ssh atakan@atakan-x550ca
+ssh user@linux-mint-node
 ```
 
 and succeeded.
@@ -407,7 +407,7 @@ The existing SSH session stayed alive.
 More importantly, the existing session was then closed and a completely new connection was opened from Windows:
 
 ```powershell
-ssh atakan@atakan-x550ca
+ssh user@linux-mint-node
 ```
 
 The new connection succeeded while the laptop lid remained closed.
@@ -429,8 +429,8 @@ Windows
    | DERP fallback when necessary
    v
 Linux Mint
-atakan-x550ca
-100.106.144.23
+linux-mint-node
+100.x.x.x
    |
    v
 OpenSSH
