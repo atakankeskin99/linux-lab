@@ -38,9 +38,6 @@ Extends the project by turning the Linux host into its own Wi-Fi access point, a
 
 [Read the LAN Drop v2 documentation](docs/01.1-lan-drop-v2.md)
 
-## Screenshot
-
-![LAN Drop UI](assets/lan-drop-ui.png)
 
 ## Scripts
 
