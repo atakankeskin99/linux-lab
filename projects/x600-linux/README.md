@@ -1,5 +1,11 @@
 # X600 Linux Lab
 
+![Platform](https://img.shields.io/badge/platform-Android%2012-green)
+![Linux](https://img.shields.io/badge/Linux-Termux%20%2B%20proot-blue)
+![Desktop](https://img.shields.io/badge/desktop-XFCE-blueviolet)
+![Remote Access](https://img.shields.io/badge/remote-SSH%20%2B%20VNC-orange)
+![Status](https://img.shields.io/badge/status-active-success)
+
 A learning-focused experiment that started as a tiny LAN file-transfer tool and turned into a full Android-hosted Linux desktop lab on an OMIX X600.
 
 The goal of this repository is not to present a polished production system. It documents the engineering process: what we tried, what failed, why we changed direction, and what eventually worked.
