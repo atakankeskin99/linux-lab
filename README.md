@@ -207,6 +207,8 @@ linux-lab/
 ├── projects/
 │   ├── lan-drop/
 │   │   ├── README.md
+│   │   ├── app.py
+│   │   ├── .gitignore
 │   │   ├── assets/
 │   │   ├── docs/
 │   │   │   ├── 01-lan-drop.md
