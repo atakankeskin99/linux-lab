@@ -53,41 +53,25 @@ For that reason, debugging sessions and unsuccessful approaches are intentionall
 
 ### LAN Drop
 
-A lightweight local-network file transfer service hosted on a Linux machine.
+A lightweight local-network file transfer service that evolved into a broader Linux, networking, and security experiment.
 
-The project began as a simple way to move files between devices on the same LAN and gradually evolved into a broader experiment spanning application development, Linux service management, networking, and security hardening.
+The project currently explores:
 
-The project currently includes and explores:
-
-- HTTP/HTTPS file transfer
-- multi-file upload, download, and deletion
+- HTTP/HTTPS file transfer and file management
 - PIN and session-based authentication
-- PIN rate limiting and temporary lockout
-- CSRF protection for state-changing operations
-- filename sanitization and duplicate filename preservation
-- request-size enforcement
-- local TLS, certificate trust, and certificate identity
-- Linux service management with systemd
-- systemd sandboxing and least-privilege hardening
+- CSRF protection, rate limiting, and upload controls
+- local TLS and certificate trust
+- systemd service management and sandboxing
 - runtime security and regression testing
 - SSH administration
-- Wi-Fi access-point mode
-- NetworkManager
+- Wi-Fi access-point mode and NetworkManager
 - self-hosted local networking
-- Bash-based service and network lifecycle control
 
-The project developed along two main experimental paths.
+The project developed along two main paths: **LAN Drop v2** explored running both the application and its Wi-Fi network from the Linux host, while a later **security hardening** phase tested and strengthened the application, TLS configuration, file handling, and systemd service.
 
-The first was **network evolution**. The original LAN Drop mode uses an existing local network for convenient file transfer. **LAN Drop v2** explored whether the Linux host could provide both the application and the network itself by operating as a Wi-Fi access point. The experiment succeeded technically, but also demonstrated an important engineering trade-off: greater infrastructure independence can produce a less convenient user workflow.
-
-The second was **security evolution**. The running service was reviewed through source inspection and runtime testing across authentication, CSRF behavior, file handling, upload limits, TLS identity, network exposure, PIN guessing, and process privileges. The findings led to targeted changes including rate limiting, explicit CSRF validation, duplicate filename protection, request-size enforcement, certificate remediation, and systemd sandboxing.
-
-The hardened service was then subjected to a final regression cycle to verify that the added controls did not break its intended functionality. As part of the service-level hardening work, the `systemd-analyze security` exposure assessment improved from **9.2 UNSAFE** to **4.4 OKAY**.
-
-Together, these iterations turned LAN Drop from a small file-transfer utility into a practical lab for exploring how application behavior, networking, TLS, Linux services, and operating-system-level isolation interact.
+The result is a small file-transfer utility that also serves as a practical lab for understanding how applications, networks, and Linux services interact.
 
 → [`projects/lan-drop/`](projects/lan-drop/)
-
 ---
 
 ### X600 Linux
