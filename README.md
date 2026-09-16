@@ -1,11 +1,9 @@
-
 # Linux Lab
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 ![Platform](https://img.shields.io/badge/platform-Linux-blue)
 ![Status](https://img.shields.io/badge/status-active-success)
 ![Learning Lab](https://img.shields.io/badge/type-learning%20lab-purple)
-
 
 A growing collection of hands-on Linux experiments, small projects, system configurations, and debugging notes created while learning Linux, networking, and infrastructure.
 
@@ -71,7 +69,8 @@ The project developed along two main paths: **LAN Drop v2** explored running bot
 
 The result is a small file-transfer utility that also serves as a practical lab for understanding how applications, networks, and Linux services interact.
 
-→ [View project](projects/lan-drop/)
+→ [View details](projects/lan-drop/)
+
 ---
 
 ### X600 Linux
@@ -93,11 +92,9 @@ The project currently explores:
 
 One of the ongoing investigations examines why SSH, Flask, VNC, XFCE, and Firefox behave differently when running simultaneously under Android's process-management environment.
 
-→ [`projects/x600-linux/`](projects/x600-linux/)
+→ [View details](projects/x600-linux/)
 
 ---
-
-
 
 ### WireGuard Remote Access
 
@@ -117,7 +114,7 @@ Rather than using a higher-level solution such as Tailscale, the network was bui
 
 After the manual WireGuard + VPS setup had completed its learning objective, the public VPS was retired and Tailscale was adopted as the practical day-to-day remote-access layer. The follow-up documents direct peer connectivity, DERP fallback, MagicDNS, reboot persistence, and lid-closed SSH access.
 
-→ [`projects/wireguard-remote-access/`](projects/wireguard-remote-access/)
+→ [View details](projects/wireguard-remote-access/)
 
 ---
 
@@ -136,11 +133,9 @@ It reports basic details such as:
 - Memory usage
 - Disk usage
 
-→ [`utilities/sysinfo-lite/`](utilities/sysinfo-lite/)
+→ [View details](utilities/sysinfo-lite/)
 
 ---
-
-
 
 ### Port Inspector
 
@@ -155,7 +150,10 @@ It currently provides:
 - support for multiple processes on the same socket
 - filtering by a specific port
 
-→ [`utilities/port-inspector/`](utilities/port-inspector/)
+→ [View details](utilities/port-inspector/)
+
+---
+
 ## What I Am Learning
 
 This repository currently touches several areas:
@@ -252,7 +250,6 @@ linux-lab/
 ├── LICENSE
 └── README.md
 ```
-
 
 ---
 
