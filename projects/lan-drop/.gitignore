@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Runtime data
+uploads/
+*.log
+
+# Local configuration / secrets
+.env
+.env.*
+*.env
+
+# TLS certificates and private keys
+*.pem
+*.key
+*.crt
+*.cer
+*.p12
+*.pfx
+
+# OS files
+.DS_Store
+Thumbs.db
