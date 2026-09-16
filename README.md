@@ -71,7 +71,7 @@ The project developed along two main paths: **LAN Drop v2** explored running bot
 
 The result is a small file-transfer utility that also serves as a practical lab for understanding how applications, networks, and Linux services interact.
 
-→ [`projects/lan-drop/`](projects/lan-drop/)
+→ [View project](projects/lan-drop/)
 ---
 
 ### X600 Linux
