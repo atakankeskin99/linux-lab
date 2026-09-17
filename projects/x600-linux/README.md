@@ -114,7 +114,7 @@ A combined SSH + Flask + TigerVNC + XFCE workload exposed intermittent selective
 
 The current leading hypothesis is Android 12 child/phantom-process management, but the repository intentionally does **not** treat the visible Termux process count as Android's phantom-process counter. A controlled A/B test using the same workload before and after changing `max_phantom_processes` is the next planned experiment.
 
-See [`docs/06-android-process-management-investigation.md`](docs/06-android-process-management-investigation.md) for the measurements, process-tree observations, rejected hypotheses, invalidated `8-process` observation, and next experiment.
+See [`docs/05-android-process-management-investigation.md`](docs/05-android-process-management-investigation.md) for the measurements, process-tree observations, rejected hypotheses, invalidated `8-process` observation, and next experiment.
 
 ## Project status
 
