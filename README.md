@@ -118,6 +118,29 @@ After the manual WireGuard + VPS setup had completed its learning objective, the
 
 ---
 
+### Secure Remote Desktop
+
+A secure remote-access lab for controlling the physical desktop of a Linux host using Tailscale, SSH local port forwarding, and x11vnc.
+
+The project explores:
+
+- physical Xorg desktop sharing with x11vnc
+- localhost-only VNC exposure
+- SSH local port forwarding
+- Tailscale-based private connectivity
+- persistent remote desktop services with systemd
+- connectivity monitoring with Bash
+- NetworkManager and Tailscale log analysis
+- layered failure diagnosis
+
+The setup deliberately keeps x11vnc bound to localhost and carries VNC traffic through an SSH tunnel over Tailscale instead of exposing the VNC port directly.
+
+A connectivity-monitoring component was later added after an intermittent remote-access failure, allowing router, Internet, Tailscale, and Wi-Fi state to be correlated with system logs during future incidents.
+
+→ [View details](projects/secure-remote-desktop/)
+
+---
+
 ## Utilities
 
 ### sysinfo-lite
@@ -233,12 +256,23 @@ linux-lab/
 │   │   └── scripts/
 │   │       └── start-vnc.sh
 │   │
-│   └── wireguard-remote-access/
+│   ├── wireguard-remote-access/
+│   │   ├── README.md
+│   │   ├── assets/
+│   │   └── docs/
+│   │       ├── 01-remote-access-through-cgnat.md
+│   │       └── 02-tailscale-operational-follow-up.md
+│   │
+│   └── secure-remote-desktop/
 │       ├── README.md
-│       ├── assets/
-│       └── docs/
-│           ├── 01-remote-access-through-cgnat.md
-│           └── 02-tailscale-operational-follow-up.md
+│       ├── docs/
+│       │   ├── 01-remote-desktop-setup.md
+│       │   └── 02-connectivity-monitoring.md
+│       ├── scripts/
+│       │   └── network-watch.sh
+│       └── systemd/
+│           ├── network-watch.service
+│           └── x11vnc.service
 │
 ├── utilities/
 │   ├── sysinfo-lite/

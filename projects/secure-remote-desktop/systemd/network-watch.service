@@ -1,0 +1,19 @@
+[Unit]
+Description=Network Connectivity Watchdog Logger
+After=network-online.target tailscaled.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=YOUR_USER
+Environment=ROUTER_IP=192.168.1.1
+Environment=INTERNET_TARGET=1.1.1.1
+Environment=TAILSCALE_PEER=100.x.x.x
+Environment=WIFI_INTERFACE=wlan0
+Environment=INTERVAL=30
+ExecStart=/home/YOUR_USER/network-watch.sh
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
