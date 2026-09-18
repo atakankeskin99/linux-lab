@@ -193,6 +193,29 @@ The project was tested against the running service rather than reviewed only at 
 
 ---
 
+## Executable security evidence
+
+The repository includes an automated security regression suite for controls that can be verified without a configured systemd host or trusted local certificate:
+
+```bash
+cd projects/lan-drop
+python -m pip install -r requirements.txt
+python -m unittest discover -s tests -v
+```
+
+The suite verifies that:
+
+* unauthenticated uploads are redirected to login
+* authenticated uploads without a valid CSRF token fail with HTTP 403 and do not write a file
+* a valid CSRF token permits an upload while a traversal-style filename is sanitized
+* the PIN lockout remains active after five failed attempts
+
+The same command runs in GitHub Actions for changes affecting LAN Drop. Host-level claims—TLS identity, network exposure, and systemd sandboxing—remain documented runtime observations because they depend on the deployed machine.
+
+[Inspect the executable security tests](tests/test_security.py)
+
+---
+
 ## Verified behavior
 
 The final regression cycle confirmed:

@@ -1560,7 +1560,7 @@ Potential future experiments include:
 - moving PIN failure state to persistent/shared storage
 - a dedicated `lan-drop` Linux service account
 - additional systemd sandboxing where compatible
-- automated regression tests
+- broader automated regression coverage
 - automated certificate regeneration when local addressing changes
 
 These are not all required for LAN Drop's current purpose.
