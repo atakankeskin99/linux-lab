@@ -1355,6 +1355,34 @@ systemd
 | Logging | Basic HTTP access logs only | Documented limitation | Structured audit logging remains future work |
 
 ---
+# Automated regression coverage
+
+A focused subset of the security findings is now encoded as an executable regression suite:
+
+```text
+tests/test_security.py
+```
+
+The automated tests verify that:
+
+- unauthenticated upload requests are redirected to the login page
+- authenticated uploads without a valid CSRF token return HTTP 403 and do not write a file
+- valid CSRF-protected uploads succeed while traversal-style filenames are sanitized
+- PIN lockout remains active after five failed attempts
+
+The suite can be run locally from the LAN Drop directory:
+
+```bash
+python -m unittest discover -s tests -v
+```
+
+The same command runs automatically through [GitHub Actions](../../../.github/workflows/lan-drop-security-tests.yml) when LAN Drop or its workflow changes.
+
+These tests cover application-level behavior that can be reproduced in an isolated test environment. Host-dependent findings—including TLS certificate identity, network exposure, filesystem permissions, and systemd sandboxing—remain runtime evidence from the configured Linux host.
+
+[Inspect the automated security tests](../tests/test_security.py)
+
+---
 
 # Final regression cycle
 

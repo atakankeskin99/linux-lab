@@ -60,12 +60,12 @@ The project currently explores:
 - CSRF protection, rate limiting, and upload controls
 - local TLS and certificate trust
 - systemd service management and sandboxing
-- runtime security and regression testing
+- executable security regression testing with GitHub Actions
 - SSH administration
 - Wi-Fi access-point mode and NetworkManager
 - self-hosted local networking
 
-The project developed along two main paths: **LAN Drop v2** explored running both the application and its Wi-Fi network from the Linux host, while a later **security hardening** phase tested and strengthened the application, TLS configuration, file handling, and systemd service.
+The project developed along two main paths: **LAN Drop v2** explored running both the application and its Wi-Fi network from the Linux host, while a later **security hardening** phase tested and strengthened the application, TLS configuration, file handling, and systemd service. Application-level security controls are now covered by an executable regression suite that runs automatically with GitHub Actions.
 
 The result is a small file-transfer utility that also serves as a practical lab for understanding how applications, networks, and Linux services interact.
 
@@ -227,6 +227,10 @@ This repository currently touches several areas:
 ```text
 linux-lab/
 │
+├── .github/
+│   └── workflows/
+│       └── lan-drop-security-tests.yml
+│
 ├── projects/
 │   ├── lan-drop/
 │   │   ├── README.md
@@ -237,8 +241,10 @@ linux-lab/
 │   │   │   ├── 01-lan-drop.md
 │   │   │   ├── 01.1-lan-drop-v2.md
 │   │   │   └── 02-security-hardening.md
-│   │   └── scripts/
-│   │       └── lan-drop
+│   │   ├── scripts/
+│   │   │   └── lan-drop
+│   │   └── tests/
+│   │       └── test_security.py
 │   │
 │   ├── x600-linux/
 │   │   ├── README.md

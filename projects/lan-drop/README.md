@@ -5,6 +5,7 @@
 ![Framework](https://img.shields.io/badge/framework-Flask-black)
 ![Service](https://img.shields.io/badge/service-systemd-orange)
 ![Status](https://img.shields.io/badge/status-active-success)
+[![LAN Drop security tests](https://github.com/atakankeskin99/linux-lab/actions/workflows/lan-drop-security-tests.yml/badge.svg)](https://github.com/atakankeskin99/linux-lab/actions/workflows/lan-drop-security-tests.yml)
 
 A lightweight, browser-based file transfer service for trusted local networks.
 
