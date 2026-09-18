@@ -4,10 +4,10 @@ This guide installs LAN Drop on an existing local network. It currently targets 
 
 ## Requirements
 
-- an Ubuntu 24.04 or Linux Mint 22 host using systemd
-- `sudo` access
-- an Internet connection during installation for APT and Python packages
-- client devices connected to the same trusted LAN
+* an Ubuntu 24.04 or Linux Mint 22 host using systemd
+* `sudo` access
+* an Internet connection during installation for APT and Python packages
+* client devices connected to the same trusted LAN
 
 ## Install
 
@@ -21,14 +21,14 @@ sudo ./install.sh
 
 The installer asks for a six-digit PIN and then:
 
-- installs Python, `venv`, and OpenSSL when needed
-- creates an isolated Python environment
-- creates a dedicated `lan-drop` system user
-- stores the application in `/opt/lan-drop`
-- stores uploads in `/var/lib/lan-drop/uploads`
-- stores secrets and TLS material in `/etc/lan-drop`
-- installs and starts a hardened systemd service
-- generates a local CA and a server certificate for the host's current IPv4 addresses
+* installs Python, `venv`, and OpenSSL when needed
+* creates an isolated Python environment
+* creates a dedicated `lan-drop` system user
+* stores the application in `/opt/lan-drop`
+* stores uploads in `/var/lib/lan-drop/uploads`
+* stores secrets and TLS material in `/etc/lan-drop`
+* installs and starts a hardened systemd service
+* generates a local CA and a server certificate for the host's current IPv4 addresses
 
 The service is deliberately left disabled at boot.
 
@@ -36,15 +36,15 @@ Open one of the URLs printed by the installer. Until the CA is trusted on the cl
 
 ## Trust the LAN Drop CA
 
-The public CA certificate is:
+The exported public CA certificate is:
 
 ```text
 /var/lib/lan-drop/lan-drop-ca.crt
 ```
 
-Copy this **public certificate only** to each client. Never copy `/etc/lan-drop/tls/ca.key`; that private key can issue trusted LAN Drop certificates.
+Copy this **public certificate only** to each client. Never copy `/etc/lan-drop/tls/ca.key`; that private key can issue certificates trusted by devices that install the LAN Drop CA.
 
-One simple way to copy the certificate from another Linux machine is:
+One simple way to copy the public certificate to another machine is:
 
 ```bash
 scp <host-user>@<host-ip>:/var/lib/lan-drop/lan-drop-ca.crt .
@@ -54,11 +54,18 @@ scp <host-user>@<host-ip>:/var/lib/lan-drop/lan-drop-ca.crt .
 
 1. Copy `lan-drop-ca.crt` to the Windows client.
 2. Double-click it and select **Install Certificate**.
-3. Select **Local Machine**.
-4. Place it in **Trusted Root Certification Authorities**.
-5. Restart the browser.
+3. Select **Current User**.
+4. Select **Place all certificates in the following store**.
+5. Place it in **Trusted Root Certification Authorities**.
+6. Complete the installation and restart the browser.
 
-This grants trust to certificates signed by this private CA. Do it only on devices you control.
+You can verify the installation from PowerShell:
+
+```powershell
+certutil -user -store Root "LAN Drop Local CA"
+```
+
+Installing this CA grants trust to certificates signed by the LAN Drop private CA. Do this only on devices you control.
 
 ### Android
 
@@ -67,7 +74,7 @@ This grants trust to certificates signed by this private CA. Do it only on devic
 3. Choose **Install a certificate → CA certificate**.
 4. Select `lan-drop-ca.crt` and accept Android's warning.
 
-Menu names vary by Android vendor and version. Some browsers or apps may not honor user-installed CAs.
+Menu names vary by Android vendor and version. Some browsers or applications may not honor user-installed CAs.
 
 ### Ubuntu / Linux Mint
 
@@ -85,6 +92,15 @@ Run the included diagnostic script on the host:
 ```bash
 sudo ./scripts/doctor.sh
 ```
+
+The script checks:
+
+* systemd unit installation
+* configuration availability
+* CA and server certificate availability
+* upload-directory permissions
+* service state
+* TCP port 8080
 
 You can also verify the health endpoint using the generated CA:
 
@@ -110,9 +126,17 @@ journalctl -u lan-drop -n 50 --no-pager
 
 ## Address changes
 
-The server certificate includes the IPv4 addresses detected during installation. If the host receives a different DHCP address, run the installer again. It reuses the existing CA and issues a new server certificate, so clients that already trust the CA do not need to import it again.
+The server certificate includes the IPv4 addresses detected during installation.
 
-A DHCP reservation on the router is recommended for a stable URL.
+If the host receives a different DHCP address, run the installer again:
+
+```bash
+sudo ./install.sh
+```
+
+The installer reuses the existing CA and issues a new server certificate containing the currently detected IPv4 addresses. Clients that already trust the CA do not need to import it again.
+
+A DHCP reservation on the router is recommended for a stable local URL.
 
 ## Uninstall
 
@@ -120,4 +144,36 @@ A DHCP reservation on the router is recommended for a stable URL.
 sudo ./uninstall.sh
 ```
 
-The uninstaller removes the service, application, secrets, and certificates. Uploaded files are deliberately preserved in `/var/lib/lan-drop/uploads`.
+The uninstaller:
+
+* stops and removes the systemd service
+* removes the application from `/opt/lan-drop`
+* removes secrets, the private CA key, and server-side TLS material from `/etc/lan-drop`
+* deliberately preserves `/var/lib/lan-drop` so uploaded files are not deleted automatically
+
+Because `/var/lib/lan-drop` is preserved, the exported public CA certificate may remain at:
+
+```text
+/var/lib/lan-drop/lan-drop-ca.crt
+```
+
+After confirming that no required uploads remain, the preserved data and the dedicated system user can be removed manually:
+
+```bash
+sudo rm -rf -- /var/lib/lan-drop
+sudo userdel lan-drop
+```
+
+CA certificates installed on client devices are not removed by the server-side uninstaller. They must be removed separately from each client's trust store.
+
+For a Windows CA installed under the current user, first identify the certificate:
+
+```powershell
+certutil -user -store Root "LAN Drop Local CA"
+```
+
+Then remove it using the certificate's SHA-1 hash:
+
+```powershell
+certutil -user -delstore Root <certificate-sha1-hash>
+```
