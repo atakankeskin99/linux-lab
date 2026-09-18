@@ -207,8 +207,12 @@ python -m unittest discover -s tests -v
 The suite verifies that:
 
 * unauthenticated uploads are redirected to login
+* a correct PIN creates an authenticated session and CSRF token
 * authenticated uploads without a valid CSRF token fail with HTTP 403 and do not write a file
 * a valid CSRF token permits an upload while a traversal-style filename is sanitized
+* duplicate filenames are preserved with a numbered suffix instead of overwriting the original
+* oversized uploads return HTTP 413 without writing a file
+* the upload, download, and CSRF-protected delete lifecycle preserves file integrity
 * the PIN lockout remains active after five failed attempts
 
 The same command runs in GitHub Actions for changes affecting LAN Drop. Host-level claims—TLS identity, network exposure, and systemd sandboxing—remain documented runtime observations because they depend on the deployed machine.
