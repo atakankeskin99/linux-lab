@@ -24,3 +24,9 @@ uploads/
 # OS files
 .DS_Store
 Thumbs.db
+uploads/
+.venv/
+*.pem
+*.key
+*.crt
+__pycache__/

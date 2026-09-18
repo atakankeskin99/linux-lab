@@ -40,6 +40,31 @@ The result is intentionally small in scope but implemented across several layers
 
 ---
 
+## Quick start — V1 existing LAN
+
+The installer currently supports Ubuntu 24.04 and Linux Mint 22:
+
+```bash
+git clone https://github.com/atakankeskin99/linux-lab.git
+cd linux-lab/projects/lan-drop
+chmod +x install.sh uninstall.sh scripts/doctor.sh
+sudo ./install.sh
+```
+
+Choose a six-digit PIN when prompted, then open one of the HTTPS URLs printed by the installer.
+
+LAN Drop creates its own local certificate authority. To remove the browser certificate warning safely, install the generated **public CA certificate** on each client:
+
+```text
+/var/lib/lan-drop/lan-drop-ca.crt
+```
+
+[Read the complete installation, client trust, verification, and uninstall guide](docs/03-installation.md)
+
+> LAN Drop is intended for trusted local networks. Do not expose TCP 8080 directly to the Internet.
+
+---
+
 ## Features
 
 ### File transfer
@@ -231,6 +256,10 @@ Network lifecycle and application lifecycle remain separate: the Flask applicati
 ```text
 lan-drop/
 ├── README.md
+├── app.py
+├── install.sh
+├── requirements.txt
+├── uninstall.sh
 ├── assets/
 │   ├── lan-drop-ui.png
 │   ├── duplicate-filename-protection.png
@@ -239,9 +268,13 @@ lan-drop/
 ├── docs/
 │   ├── 01-lan-drop.md
 │   ├── 01.1-lan-drop-v2.md
-│   └── 02-security-hardening.md
-└── scripts/
-    └── lan-drop
+│   ├── 02-security-hardening.md
+│   └── 03-installation.md
+├── scripts/
+│   ├── doctor.sh
+│   └── lan-drop
+└── systemd/
+    └── lan-drop.service
 ```
 
 ---
@@ -251,6 +284,7 @@ lan-drop/
 * [LAN Drop V1 — application and local-network service](docs/01-lan-drop.md)
 * [LAN Drop V2 — self-hosted Wi-Fi mode](docs/01.1-lan-drop-v2.md)
 * [Security review, hardening, and regression testing](docs/02-security-hardening.md)
+* [Installation and client CA trust](docs/03-installation.md)
 
 ---
 

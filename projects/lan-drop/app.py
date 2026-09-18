@@ -9,16 +9,34 @@ from flask import (
     send_from_directory,
     redirect,
     session,
-    abort
+    abort,
+    jsonify,
+    url_for,
 )
+from markupsafe import escape
 from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 
-UPLOAD_FOLDER = "uploads"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+UPLOAD_FOLDER = os.environ.get(
+    "LAN_DROP_UPLOAD_DIR",
+    os.path.join(BASE_DIR, "uploads")
+)
+CERT_FILE = os.environ.get(
+    "LAN_DROP_CERT_FILE",
+    os.path.join(BASE_DIR, "lan-drop.pem")
+)
+KEY_FILE = os.environ.get(
+    "LAN_DROP_KEY_FILE",
+    os.path.join(BASE_DIR, "lan-drop-key.pem")
+)
 
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 app.config["MAX_CONTENT_LENGTH"] = 100 * 1024 * 1024
+app.config["SESSION_COOKIE_SECURE"] = True
+app.config["SESSION_COOKIE_HTTPONLY"] = True
+app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
 
 app.config["SECRET_KEY"] = os.environ.get("LAN_DROP_SECRET")
 
@@ -79,6 +97,33 @@ def validate_csrf_token():
         )
     ):
         abort(403)
+
+
+def validate_config():
+    if not app.config["SECRET_KEY"]:
+        raise RuntimeError(
+            "LAN_DROP_SECRET environment variable is not set."
+        )
+
+    if not PIN:
+        raise RuntimeError(
+            "LAN_DROP_PIN environment variable is not set."
+        )
+
+    if not PIN.isdigit() or len(PIN) != 6:
+        raise RuntimeError(
+            "LAN_DROP_PIN must contain exactly 6 digits."
+        )
+
+    os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
+
+
+validate_config()
+
+
+@app.route("/healthz")
+def healthz():
+    return jsonify(status="ok")
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -250,24 +295,33 @@ def login():
 @app.route("/")
 @login_required
 def home():
-    files = os.listdir(UPLOAD_FOLDER)
+    files = sorted(
+        filename
+        for filename in os.listdir(app.config["UPLOAD_FOLDER"])
+        if os.path.isfile(
+            os.path.join(app.config["UPLOAD_FOLDER"], filename)
+        )
+    )
     csrf_token = get_csrf_token()
 
     file_list = ""
 
     for filename in files:
+        display_name = escape(filename)
+        download_url = url_for("download", filename=filename)
+        delete_url = url_for("delete", filename=filename)
         file_list += f"""
         <li class="file-row">
-            <span class="filename">{filename}</span>
+            <span class="filename">{display_name}</span>
 
             <div class="actions">
-                <a class="download-btn" href="/download/{filename}">
+                <a class="download-btn" href="{download_url}">
                     Download
                 </a>
 
                 <form
                     class="delete-form"
-                    action="/delete/{filename}"
+                    action="{delete_url}"
                     method="POST"
                 >
                     <input
@@ -543,28 +597,13 @@ def logout():
 
 
 if __name__ == "__main__":
-    if not app.config["SECRET_KEY"]:
-        raise RuntimeError(
-            "LAN_DROP_SECRET environment variable is not set."
-        )
-
-    if not PIN:
-        raise RuntimeError(
-            "LAN_DROP_PIN environment variable is not set."
-        )
-
-    if not PIN.isdigit() or len(PIN) != 6:
-        raise RuntimeError(
-            "LAN_DROP_PIN must contain exactly 6 digits."
-        )
-
     app.run(
         host="0.0.0.0",
         port=8080,
         debug=False,
         use_reloader=False,
         ssl_context=(
-            "lan-drop.pem",
-            "lan-drop-key.pem"
+            CERT_FILE,
+            KEY_FILE
         )
     )
