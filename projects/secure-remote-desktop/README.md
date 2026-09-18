@@ -2,7 +2,6 @@
 
 ![License](https://img.shields.io/badge/License-MIT-blue.svg)
 ![Platform](https://img.shields.io/badge/Platform-Linux-lightgrey.svg)
-![Status](https://img.shields.io/badge/Status-Working-brightgreen.svg)
 ![Type](https://img.shields.io/badge/Type-Remote%20Access%20Lab-purple.svg)
 
 
