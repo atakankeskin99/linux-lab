@@ -1,62 +1,68 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -euo pipefail
 
-
-HOTSPOT="LAN-Drop"
-SERVICE="lan-drop"
+CONFIG_FILE="${LAN_DROP_V2_CONFIG:-/etc/lan-drop/v2.env}"
+SERVICE="lan-drop.service"
 URL="https://10.42.0.1:8080"
 
+fail() {
+    printf 'Error: %s\n' "$1" >&2
+    exit 1
+}
 
+[[ ${EUID} -eq 0 ]] || fail "run with sudo: sudo lan-drop {start|stop|status}"
+[[ -r ${CONFIG_FILE} ]] || fail "V2 is not installed; run sudo ./install-v2.sh"
 
-case "$1" in
-   
+# shellcheck source=/dev/null
+source "${CONFIG_FILE}"
+
+case "${1:-}" in
     start)
-        echo "Starting LAN-Drop..."
+        service_started=false
+        if ! systemctl is-active --quiet "${SERVICE}"; then
+            systemctl start "${SERVICE}"
+            service_started=true
+        fi
 
-        nmcli connection up "$HOTSPOT" || exit 1
+        if ! nmcli -t -f NAME connection show --active | grep -Fxq "${CONNECTION_NAME}"; then
+            if ! nmcli connection up id "${CONNECTION_NAME}" ifname "${WIFI_INTERFACE}"; then
+                if [[ ${service_started} == true ]]; then
+                    systemctl stop "${SERVICE}"
+                fi
+                fail "the hotspot failed to start; the prior service state was preserved"
+            fi
+        fi
 
-        echo "Hotspot ready."
-
-        sudo systemctl start "$SERVICE" || exit 1
-
-        echo
-        echo "LAN-Drop is ready."
-        echo "Wi-Fi : $HOTSPOT"
-        echo "URL   : $URL"
-
+        printf '\nLAN Drop V2 is ready.\n'
+        printf 'Wi-Fi: %s\n' "${HOTSPOT_SSID}"
+        printf 'URL:   %s\n' "${URL}"
         ;;
- 
+
     stop)
-        echo "Stopping LAN-Drop..."
+        systemctl stop "${SERVICE}" || true
 
-        sudo systemctl stop "$SERVICE"
-        
-        nmcli connection down "$HOTSPOT"
+        if nmcli -t -f NAME connection show --active | grep -Fxq "${CONNECTION_NAME}"; then
+            nmcli connection down id "${CONNECTION_NAME}"
+        fi
 
-        echo "LAN-Drop stopped."
-
+        printf 'LAN Drop V2 stopped.\n'
         ;;
 
-   status)
+    status)
+        printf '=== Hotspot ===\n'
+        if nmcli -t -f NAME connection show --active | grep -Fxq "${CONNECTION_NAME}"; then
+            nmcli -f NAME,TYPE,DEVICE connection show --active \
+                | awk -v name="${CONNECTION_NAME}" 'NR == 1 || $1 == name'
+        else
+            printf 'inactive\n'
+        fi
 
-       echo "=== Hotspot ==="
-  
-       nmcli -f NAME,TYPE,DEVICE connection show --active | grep "$HOTSPOT" || echo "Hotspot inactive"
+        printf '\n=== Service ===\n'
+        systemctl is-active "${SERVICE}" || true
+        ;;
 
-       echo 
-  
-       echo "=== Service ==="
-   
-       systemctl is-active "$SERVICE"
-
-       ;;
-
- *) 
-
-
-   echo "Usage: $0 {start|stop|status}"
-
-   exit 1
-
-   ;;
-
+    *)
+        printf 'Usage: sudo lan-drop {start|stop|status}\n' >&2
+        exit 2
+        ;;
 esac
