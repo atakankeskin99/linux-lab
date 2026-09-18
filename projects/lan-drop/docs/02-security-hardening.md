@@ -1366,8 +1366,12 @@ tests/test_security.py
 The automated tests verify that:
 
 - unauthenticated upload requests are redirected to the login page
+- a correct PIN creates an authenticated session and CSRF token
 - authenticated uploads without a valid CSRF token return HTTP 403 and do not write a file
 - valid CSRF-protected uploads succeed while traversal-style filenames are sanitized
+- duplicate filenames are preserved with a numbered suffix instead of overwriting the original
+- oversized uploads return HTTP 413 without writing a file
+- the upload, download, and CSRF-protected delete lifecycle preserves file integrity
 - PIN lockout remains active after five failed attempts
 
 The suite can be run locally from the LAN Drop directory:
