@@ -65,6 +65,28 @@ LAN Drop creates its own local certificate authority. To remove the browser cert
 
 ---
 
+## Optional V2 hotspot
+
+After installing V1, a supported Wi-Fi adapter can provide an isolated `LAN-Drop` network:
+
+```bash
+chmod +x install-v2.sh uninstall-v2.sh scripts/doctor-v2.sh
+sudo ./install-v2.sh
+sudo lan-drop start
+```
+
+Clients connect to the `LAN-Drop` SSID and open:
+
+```text
+https://10.42.0.1:8080
+```
+
+[Read the complete V2 installation, verification, and removal guide](docs/04-v2-installation.md)
+
+> On a single-adapter host, starting V2 replaces the current Wi-Fi connection and may disconnect SSH or Tailscale.
+
+---
+
 ## Features
 
 ### File transfer
@@ -240,9 +262,9 @@ Because systemd owns the process, an SSH session used to start or inspect the se
 V2 includes a Bash wrapper that coordinates the Wi-Fi hotspot and application service:
 
 ```bash
-lan-drop start
-lan-drop status
-lan-drop stop
+sudo lan-drop start
+sudo lan-drop status
+sudo lan-drop stop
 ```
 
 The launcher is available at [`scripts/lan-drop`](scripts/lan-drop).
@@ -258,8 +280,10 @@ lan-drop/
 ├── README.md
 ├── app.py
 ├── install.sh
+├── install-v2.sh
 ├── requirements.txt
 ├── uninstall.sh
+├── uninstall-v2.sh
 ├── assets/
 │   ├── lan-drop-ui.png
 │   ├── duplicate-filename-protection.png
@@ -269,9 +293,11 @@ lan-drop/
 │   ├── 01-lan-drop.md
 │   ├── 01.1-lan-drop-v2.md
 │   ├── 02-security-hardening.md
-│   └── 03-installation.md
+│   ├── 03-installation.md
+│   └── 04-v2-installation.md
 ├── scripts/
 │   ├── doctor.sh
+│   ├── doctor-v2.sh
 │   └── lan-drop
 └── systemd/
     └── lan-drop.service
@@ -285,6 +311,7 @@ lan-drop/
 * [LAN Drop V2 — self-hosted Wi-Fi mode](docs/01.1-lan-drop-v2.md)
 * [Security review, hardening, and regression testing](docs/02-security-hardening.md)
 * [Installation and client CA trust](docs/03-installation.md)
+* [V2 hotspot installation and operation](docs/04-v2-installation.md)
 
 ---
 
