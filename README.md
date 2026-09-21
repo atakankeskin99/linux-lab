@@ -280,6 +280,9 @@ linux-lab/
 │           ├── network-watch.service
 │           └── x11vnc.service
 │
+├── investigations/
+│   └── kali-live-usb-performance.md
+│
 ├── utilities/
 │   ├── sysinfo-lite/
 │   │   ├── README.md
