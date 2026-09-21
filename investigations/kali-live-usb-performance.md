@@ -2,27 +2,103 @@
 
 ## Overview
 
-This investigation documents the behavior and storage performance of a Kali Linux Live environment running from a USB flash drive on an ASUS X550CA.
+This investigation compares the behavior of the same Kali Linux Live USB environment on two different host systems.
 
-The test started after noticeable desktop lag and slow I/O were observed while using Kali Live with encrypted persistence.
+The goal was to understand why the Live desktop felt sluggish and to establish a performance baseline before replacing the current flash drive with a faster USB device or external SSD.
 
-The goal was to verify that persistence was working correctly, inspect how the USB device was connected, and measure actual write performance rather than relying on the advertised USB specification.
+The investigation focused on:
 
-## Test Environment
+- USB link speed
+- encrypted persistence
+- sequential write performance
+- desktop responsiveness
+- possible CPU, memory and graphics-related bottlenecks
 
-- Host: ASUS X550CA
-- OS: Kali Linux Live
-- Boot mode: UEFI
-- Storage device: 32 GB USB flash drive
-- Device-reported model: `USB DISK 3.0`
-- Persistence: LUKS-encrypted ext4
-- Wi-Fi: detected and operational
+## Test Device
 
-## Persistence Verification
+The same Kali Live USB was used on both systems.
 
-Persistence was first verified by creating a test file, rebooting into the persistent Kali Live environment, and checking that the file remained available.
+- Capacity: approximately 32 GB
+- Reported device model: `USB DISK 3.0`
+- Kali Live system partition: approximately 5.1 GB
+- Persistence partition: approximately 24.3 GB
+- Persistence encryption: LUKS
+- Persistence filesystem: ext4
+- Desktop environment: XFCE
 
-The persistence volume was also visible through `lsblk`:
+## Cross-Host Results
+
+| Measurement | Windows Laptop | ASUS X550CA |
+|---|---:|---:|
+| Kali Live boot | PASS | PASS |
+| USB link speed | 5000M | 480M |
+| Persistence | PASS | PASS |
+| Sequential persistence write | 9.2 MB/s | 4.1 MB/s |
+| Desktop lag | Significant | Noticeable |
+| XFCE compositor test | Tested | Not tested |
+| Compositor disabled | Major improvement | — |
+| Wi-Fi | Operational | Operational |
+
+## Windows Laptop
+
+The Kali USB negotiated a USB 3.x connection:
+
+```bash
+lsusb -t
+```
+
+Relevant result:
+
+```text
+5000M
+```
+
+This ruled out a USB 2.0 link as the immediate explanation for the poor performance on this host.
+
+System resource checks also showed no obvious CPU or memory bottleneck:
+
+- approximately 15 GiB RAM
+- approximately 13 GiB available
+- swap disabled
+- CPU approximately 96% idle during observation
+
+Sequential write performance to encrypted persistence was measured with:
+
+```bash
+dd if=/dev/zero of=~/usb-speed-test.bin bs=1M count=256 conv=fdatasync status=progress
+```
+
+Result:
+
+```text
+9.2 MB/s
+```
+
+Despite negotiating a 5 Gbit/s USB connection, the flash drive achieved only 9.2 MB/s sustained sequential writes.
+
+Desktop responsiveness was also investigated independently.
+
+XFCE compositing was disabled with:
+
+```bash
+xfconf-query -c xfwm4 -p /general/use_compositing -s false
+```
+
+This produced a substantial improvement in window movement, menus and general desktop responsiveness.
+
+The system was using the Nouveau graphics driver, and earlier kernel output also contained Nouveau-related warnings.
+
+This indicates that the visible desktop lag was not caused solely by storage performance.
+
+Encrypted persistence was also verified successfully across reboot, including restoration of a test file and saved Wi-Fi configuration.
+
+## ASUS X550CA
+
+The same Kali Live USB was later tested on an ASUS X550CA.
+
+Kali booted successfully, Wi-Fi worked without additional configuration, and encrypted persistence survived reboot.
+
+The storage layout included:
 
 ```text
 sdb      usb   29.5G   USB DISK 3.0
@@ -32,35 +108,25 @@ sdb      usb   29.5G   USB DISK 3.0
   └─sdb3       24.3G   ext4      /run/live/persistence
 ```
 
-Result:
-
-**PASS — encrypted persistence survived a reboot and was mounted correctly.**
-
-## USB Connection Investigation
-
-The USB topology was inspected with:
+USB topology was inspected with:
 
 ```bash
 lsusb -t
 ```
 
-The system exposed an xHCI controller capable of SuperSpeed operation:
+The host exposed a SuperSpeed-capable xHCI controller:
 
 ```text
-Driver=xhci_hcd/4p, 5000M
+5000M
 ```
 
-However, the Kali Live mass-storage device itself was connected at:
+However, the Kali mass-storage device itself operated at:
 
 ```text
-Class=Mass Storage, Driver=usb-storage, 480M
+480M
 ```
 
-This indicates that although the machine exposes a 5 Gbit/s USB controller and the flash drive identifies itself as `USB DISK 3.0`, the storage device negotiated a 480 Mbit/s USB connection during this test.
-
-## Persistence Write Test
-
-Sequential write performance was measured by writing a 256 MiB temporary file to the persistent filesystem:
+The same persistence write benchmark was then performed:
 
 ```bash
 dd if=/dev/zero of=~/usb-speed-test.bin bs=1M count=256 conv=fdatasync status=progress
@@ -72,65 +138,71 @@ Result:
 268435456 bytes (268 MB, 256 MiB) copied, 65.5577 s, 4.1 MB/s
 ```
 
-Measured sequential write throughput:
+The ASUS therefore produced approximately:
 
-**4.1 MB/s**
+**4.1 MB/s sequential persistence write throughput**
 
-The temporary benchmark file was removed after the test:
+## Findings
 
-```bash
-rm ~/usb-speed-test.bin
-```
+The two hosts exposed different characteristics while using the same Kali Live USB.
 
-## Observations
+On the Windows laptop, the drive negotiated a **5000M USB connection**, but sustained writes still reached only **9.2 MB/s**.
 
-The main observations from the session were:
+This shows that the USB interface itself was not the primary storage limitation on that system. The flash drive's real-world write performance remained far below the available link capacity.
 
-- Kali Live booted successfully on the ASUS X550CA.
-- Wi-Fi worked without additional configuration.
-- Encrypted persistence operated correctly across reboots.
-- The USB device was detected as `USB DISK 3.0`.
-- The host exposed a 5000M xHCI USB controller.
-- The Kali mass-storage device nevertheless operated at 480M during the test.
-- Sequential writes to the encrypted persistence filesystem reached approximately 4.1 MB/s.
-- Noticeable desktop lag was observed while running Kali from this device.
+On the ASUS X550CA, the same storage device negotiated only **480M** and achieved approximately **4.1 MB/s** sequential writes.
 
-The measured write performance provides a plausible storage-side explanation for at least part of the poor interactive experience, particularly when applications generate persistent writes.
+The Windows laptop also demonstrated a separate graphical performance issue. CPU and memory utilization were low, while disabling the XFCE compositor produced a major improvement in responsiveness.
 
-The benchmark does not isolate USB bus speed, flash-memory performance, encryption overhead, filesystem behavior, or workload characteristics individually.
+The investigation therefore identified at least two distinct performance factors:
+
+1. **Low flash-storage performance**
+2. **Desktop composition / graphics-driver overhead**
+
+The current data does not justify attributing all observed desktop lag to a single component.
 
 ## Next Steps
 
-The current flash drive is not intended to remain the long-term Kali Live storage device.
+The current flash drive is planned to be replaced with either:
 
-A higher-performance USB flash drive or external SSD is planned as a replacement.
+- a higher-performance USB flash drive
+- or an external SSD
 
-Once the replacement storage is available, the same tests can be repeated:
+After the storage upgrade, the same tests should be repeated on both hosts.
+
+USB topology:
 
 ```bash
 lsusb -t
+```
+
+Storage layout:
+
+```bash
 lsblk -o NAME,TRAN,SIZE,MODEL,FSTYPE,MOUNTPOINTS
 ```
 
-followed by the same persistence write benchmark:
+Persistence write benchmark:
 
 ```bash
 dd if=/dev/zero of=~/usb-speed-test.bin bs=1M count=256 conv=fdatasync status=progress
 ```
 
-This will allow a direct comparison of:
+The replacement device can then be compared against the current baseline:
 
-- negotiated USB link speed
-- persistence layout
-- sequential write throughput
-- desktop responsiveness
+```text
+Windows laptop: 9.2 MB/s
+ASUS X550CA:     4.1 MB/s
+```
 
-The current **4.1 MB/s** result therefore serves as a baseline for the future storage upgrade.
+Desktop responsiveness should also be compared with XFCE compositing enabled and disabled where relevant.
 
 ## Conclusion
 
-The Kali Live environment itself operated correctly on the ASUS X550CA, including networking and encrypted persistence.
+The Kali Live environment functioned correctly on both tested systems, including encrypted persistence and networking.
 
-The primary limitation observed during this session was storage performance. Despite the flash drive identifying itself as a USB 3.0 device and the host exposing a SuperSpeed-capable controller, the device operated at 480M and achieved only **4.1 MB/s** sequential writes to the encrypted persistence filesystem.
+The current USB flash drive showed poor real-world write performance even when operating through a 5 Gbit/s connection, while performance degraded further when the same device operated at 480M on the ASUS X550CA.
 
-A future test with a faster USB flash drive or external SSD will determine how much of the observed desktop latency can be reduced by improving the storage path.
+The Windows laptop also exposed a separate graphics-related performance factor, as disabling XFCE compositing substantially improved desktop responsiveness.
+
+These measurements establish a useful baseline for repeating the investigation after migrating Kali Live to faster USB storage or an external SSD.
