@@ -6,9 +6,8 @@ on:
       - "projects/lan-drop/**"
       - ".github/workflows/lan-drop-security-tests.yml"
   pull_request:
-    paths:
-      - "projects/lan-drop/**"
-      - ".github/workflows/lan-drop-security-tests.yml"
+    branches:
+      - main
 
 permissions:
   contents: read
