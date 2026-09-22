@@ -5,7 +5,7 @@
 ![Status](https://img.shields.io/badge/status-active-success)
 ![Learning Lab](https://img.shields.io/badge/type-learning%20lab-purple)
 
-A growing collection of hands-on Linux experiments, small projects, system configurations, and debugging notes created while learning Linux, networking, and infrastructure.
+A growing collection of hands-on Linux experiments, small projects, system configurations, and debugging notes created while learning Linux, networking, infrastructure, and containerization.
 
 This repository is not a single project.
 
@@ -19,7 +19,7 @@ Most of the work in this repository starts with a simple question:
 
 > "What happens if I try this?"
 
-Instead of only studying concepts theoretically, I use available hardware to experiment with Linux systems, networking, remote access, services, automation, and system administration.
+Instead of only studying concepts theoretically, I use available hardware to experiment with Linux systems, networking, remote access, services, automation, system administration, and containerization.
 
 The goal is to document not only the final working result, but also the process behind it:
 
@@ -181,6 +181,12 @@ It currently provides:
 
 Focused technical investigations that document measurements, failed approaches, hardware behavior, and the reasoning behind the conclusions.
 
+### Container Base Image Evaluation — Alpine vs Debian Slim
+
+A controlled container investigation comparing Alpine and Debian Slim under the same Python/Flask workload. It measures base and application image footprint, container filesystem usage, idle memory, build time, start-to-ready behavior, libc and userspace differences, and records methodology corrections discovered during benchmarking.
+
+→ [Read the investigation](investigations/container-base-image-evaluation/)
+
 ### Kali Live USB Performance
 
 A cross-host investigation into USB link speed, encrypted persistence, storage throughput, and XFCE compositor overhead.
@@ -226,13 +232,19 @@ This repository currently touches several areas:
 - Python
 - Flask
 - Bash scripting
+- Docker
+- container image construction
 - simple web interfaces
 - Git and GitHub
 
 **Systems**
 - client/server architecture
 - process lifecycle
+- container lifecycle
+- shared-kernel container architecture
+- Linux userspace and libc differences
 - resource constraints
+- performance measurement and benchmarking
 - debugging
 - Android/Linux interaction
 - service orchestration
@@ -307,6 +319,27 @@ linux-lab/
 │           └── x11vnc.service
 │
 ├── investigations/
+│   ├── container-base-image-evaluation/
+│   │   ├── README.md
+│   │   ├── alpine/
+│   │   │   └── Dockerfile
+│   │   ├── app/
+│   │   │   ├── app.py
+│   │   │   └── requirements.txt
+│   │   ├── assets/
+│   │   │   ├── alpine-baseline.png
+│   │   │   ├── alpine-build-time.png
+│   │   │   ├── application-image-size-comparison.png
+│   │   │   ├── busybox-vs-debian-userspace.png
+│   │   │   ├── debian-baseline.png
+│   │   │   ├── debian-slim-build-time.png
+│   │   │   ├── idle-memory-comparison.png
+│   │   │   └── libc-comparison.png
+│   │   ├── debian-slim/
+│   │   │   └── Dockerfile
+│   │   └── results/
+│   │       ├── benchmark-results.csv
+│   │       └── benchmark-results.md
 │   ├── kali-live-usb-performance.md
 │   └── wake-on-lan-asus-x550ca.md
 │
