@@ -177,6 +177,24 @@ It currently provides:
 
 ---
 
+## Investigations
+
+Focused technical investigations that document measurements, failed approaches, hardware behavior, and the reasoning behind the conclusions.
+
+### Kali Live USB Performance
+
+A cross-host investigation into USB link speed, encrypted persistence, storage throughput, and XFCE compositor overhead.
+
+→ [Read the investigation](investigations/kali-live-usb-performance.md)
+
+### Wake-on-LAN — ASUS X550CA
+
+A hardware and network investigation into Wake-on-LAN behavior on the ASUS X550CA, including NIC configuration, magic-packet verification, suspend behavior, and unsuccessful wake attempts.
+
+→ [Read the investigation](investigations/wake-on-lan-asus-x550ca.md)
+
+---
+
 ## What I Am Learning
 
 This repository currently touches several areas:
@@ -235,21 +253,30 @@ linux-lab/
 │   ├── lan-drop/
 │   │   ├── README.md
 │   │   ├── app.py
+│   │   ├── requirements.txt
+│   │   ├── install.sh
+│   │   ├── install-v2.sh
+│   │   ├── uninstall.sh
+│   │   ├── uninstall-v2.sh
 │   │   ├── .gitignore
-│   │   ├── assets/
 │   │   ├── docs/
 │   │   │   ├── 01-lan-drop.md
 │   │   │   ├── 01.1-lan-drop-v2.md
-│   │   │   └── 02-security-hardening.md
+│   │   │   ├── 02-security-hardening.md
+│   │   │   ├── 03-installation.md
+│   │   │   └── 04-v2-installation.md
 │   │   ├── scripts/
-│   │   │   └── lan-drop
+│   │   │   ├── lan-drop
+│   │   │   ├── doctor.sh
+│   │   │   └── doctor-v2.sh
+│   │   ├── systemd/
+│   │   │   └── lan-drop.service
 │   │   └── tests/
 │   │       └── test_security.py
 │   │
 │   ├── x600-linux/
 │   │   ├── README.md
 │   │   ├── ROADMAP.md
-│   │   ├── assets/
 │   │   ├── dashboard/
 │   │   │   ├── README.md
 │   │   │   └── app.py
@@ -264,7 +291,6 @@ linux-lab/
 │   │
 │   ├── wireguard-remote-access/
 │   │   ├── README.md
-│   │   ├── assets/
 │   │   └── docs/
 │   │       ├── 01-remote-access-through-cgnat.md
 │   │       └── 02-tailscale-operational-follow-up.md
@@ -281,7 +307,8 @@ linux-lab/
 │           └── x11vnc.service
 │
 ├── investigations/
-│   └── kali-live-usb-performance.md
+│   ├── kali-live-usb-performance.md
+│   └── wake-on-lan-asus-x550ca.md
 │
 ├── utilities/
 │   ├── sysinfo-lite/
