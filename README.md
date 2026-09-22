@@ -327,14 +327,6 @@ linux-lab/
 │   │   │   ├── app.py
 │   │   │   └── requirements.txt
 │   │   ├── assets/
-│   │   │   ├── alpine-baseline.png
-│   │   │   ├── alpine-build-time.png
-│   │   │   ├── application-image-size-comparison.png
-│   │   │   ├── busybox-vs-debian-userspace.png
-│   │   │   ├── debian-baseline.png
-│   │   │   ├── debian-slim-build-time.png
-│   │   │   ├── idle-memory-comparison.png
-│   │   │   └── libc-comparison.png
 │   │   ├── debian-slim/
 │   │   │   └── Dockerfile
 │   │   └── results/
