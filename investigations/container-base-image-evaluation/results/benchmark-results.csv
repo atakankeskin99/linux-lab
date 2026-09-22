@@ -1,0 +1,19 @@
+category,metric,run,alpine,debian_slim,unit,notes
+base,root_filesystem,,8.7,82,MB,bare image baseline
+base,docker_disk_usage,,13,116,MB,bare image baseline
+base,content_size,,3.94,30.6,MB,bare image baseline
+application,docker_disk_usage,,90.5,197,MB,final application image
+application,content_size,,22,48.1,MB,final application image
+application,container_filesystem,,64.5,138,MB,du -shx /
+runtime,idle_memory,,24.24,22.05,MiB,docker stats --no-stream
+build,no_cache_warm_base,1,38.54,30.21,s,base images already local
+build,no_cache_warm_base,2,31.73,31.21,s,base images already local
+build,no_cache_warm_base,3,31.22,28.36,s,base images already local
+startup,start_to_ready,1,2169,3632,ms,pre-created container -> /health HTTP 200
+startup,start_to_ready,2,1583,1488,ms,pre-created container -> /health HTTP 200
+startup,start_to_ready,3,1612,1480,ms,pre-created container -> /health HTTP 200
+startup,start_to_ready,4,1605,1471,ms,pre-created container -> /health HTTP 200
+startup,start_to_ready,5,1666,1475,ms,pre-created container -> /health HTTP 200
+startup,exploratory_alpine,,1730,,ms,valid exploratory sample; excluded from matched five-run set
+runtime,libc,,musl 1.2.6,glibc 2.41,,final application images
+runtime,package_entries,,29,87,count,not directly comparable as size metrics
