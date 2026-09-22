@@ -11,6 +11,14 @@ read -r -p 'Continue? [y/N] ' answer
 [[ ${answer} =~ ^[Yy]$ ]] || exit 0
 
 systemctl disable --now lan-drop.service >/dev/null 2>&1 || true
+
+if [[ -f /etc/lan-drop/v2.env ]]; then
+    # shellcheck source=/dev/null
+    source /etc/lan-drop/v2.env
+    nmcli connection delete id "${CONNECTION_NAME}" >/dev/null 2>&1 || true
+    rm -f /usr/local/bin/lan-drop
+fi
+
 rm -f /etc/systemd/system/lan-drop.service
 systemctl daemon-reload
 rm -rf /opt/lan-drop
