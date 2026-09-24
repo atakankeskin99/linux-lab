@@ -1,323 +1,299 @@
+<div align="center">
+
 # Linux Lab
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-![Platform](https://img.shields.io/badge/platform-Linux-blue)
-![Status](https://img.shields.io/badge/status-active-success)
-![Learning Lab](https://img.shields.io/badge/type-learning%20lab-purple)
+Hands-on Linux, networking, security, and container experiments.<br>
+Built on available hardware. Documented from first attempt to measured result.
 
-A growing collection of hands-on Linux experiments, small projects, system configurations, and debugging notes created while learning Linux, networking, infrastructure, and containerization.
+[![Linux](https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black)](#lab-environment)
+[![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)](#projects)
+[![Bash](https://img.shields.io/badge/Bash-4EAA25?style=for-the-badge&logo=gnubash&logoColor=white)](#utilities)
+[![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)](#investigations)
 
-This repository is not a single project.
+[![LAN Drop security tests](https://github.com/atakankeskin99/linux-lab/actions/workflows/lan-drop-security-tests.yml/badge.svg?branch=main)](https://github.com/atakankeskin99/linux-lab/actions/workflows/lan-drop-security-tests.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-a78bfa.svg)](LICENSE)
+![Learning lab](https://img.shields.io/badge/Focus-hands--on%20learning-06b6d4)
 
-It is a **learning lab** — a place where I document what I build, break, investigate, fix, and learn along the way.
+**[Lab status](#lab-status) · [Projects](#projects) · [Utilities](#utilities) · [Investigations](#investigations) · [Explore the repo](#explore-the-repo)**
 
----
-
-## About This Repository
-
-Most of the work in this repository starts with a simple question:
-
-> "What happens if I try this?"
-
-Instead of only studying concepts theoretically, I use available hardware to experiment with Linux systems, networking, remote access, services, automation, system administration, and containerization.
-
-The goal is to document not only the final working result, but also the process behind it:
-
-- what I tried
-- what worked
-- what failed
-- how problems were investigated
-- what measurements were taken
-- which assumptions turned out to be wrong
-- what I learned from the process
-
-Some experiments become small standalone projects. Others remain technical notes, debugging investigations, or stepping stones toward larger homelab projects.
+</div>
 
 ---
 
-## Lab Philosophy
+## About the Lab
 
-The main principle behind this repository is simple:
+This repository started with Linux Mint XFCE on an old ASUS X550CA and a small Bash script for displaying system information. It grew into a collection of tools, services, and investigations built around practical questions:
 
-**Learn by building, breaking, debugging, and documenting.**
+- Can I turn a Linux laptop into a browser-based file-transfer service—and make it provide its own Wi-Fi network?
+- Can an Android phone host a usable Linux desktop and an application of its own?
+- How do I reach a machine behind CGNAT, then diagnose the connection when it disappears?
+- Does a smaller container image actually mean lower memory use or faster startup?
 
-A failed experiment can be just as useful as a successful one if the failure teaches something about how the system actually works.
+Each project preserves the implementation alongside the decisions, tests, failed approaches, and open questions. Some tools are usable today. Some experiments reached their learning objective. Others remain unresolved, with evidence pointing toward the next test.
 
-For that reason, debugging sessions and unsuccessful approaches are intentionally documented instead of being removed from the project history.
+<a id="lab-status"></a>
 
----
+## Lab Status
 
-## Current Projects
+**4 projects · 2 utilities · 3 standalone investigations**
+
+| Project / investigation | Area | Status | Where it stands |
+| --- | --- | --- | --- |
+| [**LAN Drop**](projects/lan-drop/) | File transfer & security | ![Working](https://img.shields.io/badge/Working-22c55e) | HTTPS service, V1/V2 installers, systemd hardening, and application security regression tests. |
+| [**X600 Linux**](projects/x600-linux/) | Android-hosted Linux | ![Experimental](https://img.shields.io/badge/Experimental-f59e0b) | XFCE, SSH, VNC, and dashboard working; service loss under heavier workloads remains under investigation. |
+| [**WireGuard Remote Access**](projects/wireguard-remote-access/) | VPN & CGNAT | ![Completed](https://img.shields.io/badge/Completed-3b82f6) | Manual WireGuard/VPS lab completed; VPS retired and everyday remote access moved to Tailscale. |
+| [**Secure Remote Desktop**](projects/secure-remote-desktop/) | Remote access & monitoring | ![Working](https://img.shields.io/badge/Working-22c55e) | Physical desktop shared through SSH/Tailscale; monitoring added to investigate intermittent connectivity loss. |
+| [**sysinfo-lite**](utilities/sysinfo-lite/) | Bash utility | ![Working](https://img.shields.io/badge/Working-22c55e) | Minimal CLI for host, CPU, memory, and root-filesystem information. |
+| [**Port Inspector**](utilities/port-inspector/) | Network utility | ![v0.1](https://img.shields.io/badge/v0.1-06b6d4) | IPv4 TCP listeners, bind scope, process/PID lookup, and single-port filtering. |
+| [**Alpine vs Debian Slim**](investigations/container-base-image-evaluation/) | Container benchmarking | ![Completed](https://img.shields.io/badge/Completed-3b82f6) | Same-workload comparison with recorded measurements and corrected startup methodology. |
+| [**Kali Live USB Performance**](investigations/kali-live-usb-performance.md) | Storage & desktop performance | ![Baseline recorded](https://img.shields.io/badge/Baseline%20recorded-a855f7) | Two-host comparison complete; repeat tests on faster storage are planned. |
+| [**Wake-on-LAN — ASUS X550CA**](investigations/wake-on-lan-asus-x550ca.md) | Hardware & power management | ![Unresolved](https://img.shields.io/badge/Unresolved-ef4444) | No successful wake from suspend or shutdown; checks and negative results preserved. |
+
+*Statuses describe documented outcomes. “Working” means demonstrated in the lab; “Completed” means the experiment met its stated objective. The CI badge above covers LAN Drop's application tests.*
+
+<a id="projects"></a>
+
+## Projects
 
 ### LAN Drop
 
-A lightweight local-network file transfer service that evolved into a broader Linux, networking, and security experiment.
+**A small file-transfer tool that grew into a Linux service and security lab.**
 
-The project currently explores:
+LAN Drop lets devices on a trusted local network upload, download, and delete files through a browser. It runs over HTTPS with a six-digit PIN, session authentication, and a systemd-managed Gunicorn process.
 
-- HTTP/HTTPS file transfer and file management
-- PIN and session-based authentication
-- CSRF protection, rate limiting, and upload controls
-- local TLS and certificate trust
-- systemd service management and sandboxing
-- executable security regression testing with GitHub Actions
-- SSH administration
-- Wi-Fi access-point mode and NetworkManager
-- self-hosted local networking
+The project developed in three directions:
 
-The project developed along two main paths: **LAN Drop v2** explored running both the application and its Wi-Fi network from the Linux host, while a later **security hardening** phase tested and strengthened the application, TLS configuration, file handling, and systemd service. Application-level security controls are now covered by an executable regression suite that runs automatically with GitHub Actions.
+- **V1 — Existing LAN:** an on-demand file service with installation, removal, and diagnostic scripts, a dedicated service user, and a local certificate authority.
+- **V2 — Self-hosted Wi-Fi:** NetworkManager access-point mode and a launcher that coordinates the hotspot with the application. It works without a router, but switching networks makes V1 more convenient for ordinary use.
+- **Security hardening:** session-bound CSRF tokens, PIN throttling, a 100 MiB request limit, duplicate filename preservation, TLS identity verification, and systemd sandboxing.
 
-The result is a small file-transfer utility that also serves as a practical lab for understanding how applications, networks, and Linux services interact.
+**Evidence:** the documented hardening pass reduced the `systemd-analyze security` exposure score from **9.2 to 4.4**. Application-level regression tests run in GitHub Actions; host-dependent TLS and sandbox findings are documented separately. The exposure score measures the service unit's isolation, not overall application security.
 
-→ [View details](projects/lan-drop/)
+**Explore:** [Project overview](projects/lan-drop/) · [V1 installation](projects/lan-drop/docs/03-installation.md) · [V2 hotspot](projects/lan-drop/docs/04-v2-installation.md) · [Security review](projects/lan-drop/docs/02-security-hardening.md) · [Tests](projects/lan-drop/tests/test_security.py)
 
 ---
 
 ### X600 Linux
 
-An experiment in turning an Android-based Omix X600 smartphone into a remotely accessible Linux environment.
+**An OMIX X600 repurposed as an Android-hosted Linux desktop and application environment.**
 
-The project currently explores:
+The first attempt followed the native Linux route into MediaTek kernel sources and driver build failures. The project then pivoted to the working Android kernel, with Termux, Termux:X11, XFCE, TigerVNC, and an optional Ubuntu PRoot environment above it.
 
-- Termux
-- SSH
-- TigerVNC
-- XFCE
-- remote Linux desktop access
-- Flask-based system monitoring
-- Android/Linux process behavior
-- resource constraints
-- Android phantom-process management
-- debugging multi-process workloads
+- Remote shell access and graphical desktop control from a Windows workstation.
+- A custom Flask dashboard using `/proc`, sysfs, Android properties, and shell commands, with unavailable metrics handled as `N/A`.
+- A documented investigation into selective process termination when SSH, Flask, VNC/XFCE, and Firefox run together.
 
-One of the ongoing investigations examines why SSH, Flask, VNC, XFCE, and Firefox behave differently when running simultaneously under Android's process-management environment.
+**Open question:** Android child/phantom-process management is the leading hypothesis, not a confirmed root cause. The next planned experiment repeats the same workload before and after changing `max_phantom_processes`. Termux-visible process counts are explicitly kept separate from Android's internal phantom-process accounting.
 
-→ [View details](projects/x600-linux/)
+**Explore:** [Project overview](projects/x600-linux/) · [Native Linux attempt](projects/x600-linux/docs/01-native-linux-attempt.md) · [Dashboard](projects/x600-linux/dashboard/) · [Process investigation](projects/x600-linux/docs/05-android-process-management-investigation.md) · [Roadmap](projects/x600-linux/ROADMAP.md)
 
 ---
 
 ### WireGuard Remote Access
 
-A remote-access networking lab built around WireGuard and a public VPS to reach a Linux host behind CGNAT.
+**Reaching a Linux host behind CGNAT—and understanding every hop along the way.**
 
-The project explores:
+A public VPS served as a WireGuard hub between the Linux host and a Windows client. Building the path manually exposed the practical roles of `AllowedIPs`, Linux forwarding, `iptables` INPUT/FORWARD rules, persistent keepalives, and cloud firewall configuration.
 
-- CGNAT and inbound connectivity limitations
-- WireGuard peer routing and `AllowedIPs`
-- Linux IP forwarding
-- `iptables` INPUT and FORWARD chains
-- UDP traversal and persistent keepalives
-- cloud networking and firewall debugging
-- persistent VPN services with systemd
+End-to-end SSH access and reboot persistence were validated. Once the learning objective was complete, the VPS was retired and Tailscale became the everyday remote-access layer.
 
-Rather than using a higher-level solution such as Tailscale, the network was built manually to expose and understand the underlying routing, firewall, and WireGuard mechanisms.
+The operational follow-up covers direct peer connections, DERP fallback, MagicDNS, and lid-closed access to the powered-on laptop. It preserves both the manual setup and the reasoning behind simplifying it.
 
-After the manual WireGuard + VPS setup had completed its learning objective, the public VPS was retired and Tailscale was adopted as the practical day-to-day remote-access layer. The follow-up documents direct peer connectivity, DERP fallback, MagicDNS, reboot persistence, and lid-closed SSH access.
-
-→ [View details](projects/wireguard-remote-access/)
+**Explore:** [Project overview](projects/wireguard-remote-access/) · [WireGuard through CGNAT](projects/wireguard-remote-access/docs/01-remote-access-through-cgnat.md) · [Tailscale follow-up](projects/wireguard-remote-access/docs/02-tailscale-operational-follow-up.md)
 
 ---
 
 ### Secure Remote Desktop
 
-A secure remote-access lab for controlling the physical desktop of a Linux host using Tailscale, SSH local port forwarding, and x11vnc.
+**Control of the physical Linux desktop, with monitoring for the network underneath it.**
 
-The project explores:
+This setup shares the existing Xorg display through x11vnc, bound only to localhost. A remote client reaches it through SSH local port forwarding over Tailscale, with systemd managing the server and connectivity monitor.
 
-- physical Xorg desktop sharing with x11vnc
-- localhost-only VNC exposure
-- SSH local port forwarding
-- Tailscale-based private connectivity
-- persistent remote desktop services with systemd
-- connectivity monitoring with Bash
-- NetworkManager and Tailscale log analysis
-- layered failure diagnosis
+An intermittent outage affected both VNC and SSH. That shifted the investigation toward the underlying network and led to `network-watch.sh`, which records router reachability, Internet connectivity, a Tailscale peer, and Wi-Fi signal state for comparison with system logs.
 
-The setup deliberately keeps x11vnc bound to localhost and carries VNC traffic through an SSH tunnel over Tailscale instead of exposing the VNC port directly.
+**Current boundary:** remote desktop access works; the original outage's exact cause remains unproven. The monitor collects evidence without changing routes or restarting network services.
 
-A connectivity-monitoring component was later added after an intermittent remote-access failure, allowing router, Internet, Tailscale, and Wi-Fi state to be correlated with system logs during future incidents.
+**Explore:** [Project overview](projects/secure-remote-desktop/) · [Desktop setup](projects/secure-remote-desktop/docs/01-remote-desktop-setup.md) · [Connectivity investigation](projects/secure-remote-desktop/docs/02-connectivity-monitoring.md) · [Monitor script](projects/secure-remote-desktop/scripts/network-watch.sh)
 
-→ [View details](projects/secure-remote-desktop/)
-
----
+<a id="utilities"></a>
 
 ## Utilities
 
-### sysinfo-lite
+### [sysinfo-lite](utilities/sysinfo-lite/)
 
-A lightweight Bash utility that displays essential Linux system information directly in the terminal.
+The first tool in the lab: a Bash script that prints the current user, hostname, kernel, architecture, CPU model, memory usage, and root-filesystem usage. The accompanying case study covers permissions, pipes, `$PATH`, and turning a local script into a global command.
 
-It reports basic details such as:
+```bash
+bash utilities/sysinfo-lite/sysinfo.sh
+```
 
-- Hostname
-- Current user
-- Kernel version
-- Uptime
-- Memory usage
-- Disk usage
+### [Port Inspector](utilities/port-inspector/)
 
-→ [View details](utilities/sysinfo-lite/)
+A Python CLI that combines `ss` socket data with `ip` interface data to show listening IPv4 TCP ports, bind addresses, scope labels, and associated processes. It supports multiple processes per socket and filtering by port, using only Python's standard library and Linux networking tools.
 
----
+```bash
+sudo python3 utilities/port-inspector/port_inspector.py --port 8080
+```
 
-### Port Inspector
+It was validated against LAN Drop's start/stop lifecycle. Its scope labels describe socket binding; they do not establish external reachability through firewalls or NAT.
 
-A lightweight Linux CLI utility for inspecting listening IPv4 TCP ports and identifying the processes behind them.
-
-It currently provides:
-
-- listening port discovery
-- bind-address inspection
-- basic scope classification
-- process and PID identification
-- support for multiple processes on the same socket
-- filtering by a specific port
-
-→ [View details](utilities/port-inspector/)
-
----
+<a id="investigations"></a>
 
 ## Investigations
 
-Focused technical investigations that document measurements, failed approaches, hardware behavior, and the reasoning behind the conclusions.
+### [Container Base Image Evaluation — Alpine vs Debian Slim](investigations/container-base-image-evaluation/)
 
-### Container Base Image Evaluation — Alpine vs Debian Slim
+The same Python/Flask application, built on two base images and measured on the same host.
 
-A controlled container investigation comparing Alpine and Debian Slim under the same Python/Flask workload. It measures base and application image footprint, container filesystem usage, idle memory, build time, start-to-ready behavior, libc and userspace differences, and records methodology corrections discovered during benchmarking.
+| Measurement | Alpine | Debian Slim |
+| --- | ---: | ---: |
+| Application image disk usage | **90.5 MB** | 197 MB |
+| Idle memory | 24.24 MiB | **22.05 MiB** |
+| Build time, three-run average | 33.83 s | **29.93 s** |
 
-→ [Read the investigation](investigations/container-base-image-evaluation/)
+**Finding:** Alpine's storage advantage did not translate into lower idle RAM or faster builds in this workload. Startup testing also led to a methodology correction: pre-create containers, then measure `docker start` to HTTP readiness separately from container creation.
 
-### Kali Live USB Performance
+These are local, small-sample results. Build timings used locally available base images with application-layer caching disabled.
 
-A cross-host investigation into USB link speed, encrypted persistence, storage throughput, and XFCE compositor overhead.
+[Methodology and interpretation](investigations/container-base-image-evaluation/) · [Recorded results](investigations/container-base-image-evaluation/results/benchmark-results.md) · [CSV data](investigations/container-base-image-evaluation/results/benchmark-results.csv)
 
-→ [Read the investigation](investigations/kali-live-usb-performance.md)
+### [Kali Live USB Performance](investigations/kali-live-usb-performance.md)
 
-### Wake-on-LAN — ASUS X550CA
+The same encrypted-persistence USB drive was tested on two hosts. It negotiated **5000M** and wrote at **9.2 MB/s** on one, versus **480M** and **4.1 MB/s** on the ASUS X550CA. Disabling XFCE compositing on the first host also improved desktop responsiveness.
 
-A hardware and network investigation into Wake-on-LAN behavior on the ASUS X550CA, including NIC configuration, magic-packet verification, suspend behavior, and unsuccessful wake attempts.
+**Finding:** storage throughput and graphics/compositor behavior contributed separate limitations. The measurements establish a baseline for repeating the tests with faster storage.
 
-→ [Read the investigation](investigations/wake-on-lan-asus-x550ca.md)
+### [Wake-on-LAN — ASUS X550CA](investigations/wake-on-lan-asus-x550ca.md)
 
----
+NIC capabilities, magic-packet delivery while awake, ACPI wake permissions, BIOS settings, two Realtek drivers, and two Ethernet cables were checked. The laptop still did not wake from suspend or shutdown.
 
-## What I Am Learning
+**Finding:** a reported NIC capability does not guarantee a working platform-wide wake path. A firmware or power-management limitation remains the leading explanation, but the precise cause was not proven. The machine was restored to its stock driver configuration.
 
-This repository currently touches several areas:
+<a id="lab-environment"></a>
 
-**Linux**
-- processes and process trees
-- services and daemons
-- permissions
-- shell usage
-- environment configuration
-- system monitoring
+## Lab Environment
 
-**Networking**
-- LAN addressing
-- Wi-Fi access-point mode
-- NetworkManager
-- local network creation
-- SSH
-- ports and sockets
-- HTTP/HTTPS
-- remote administration
-- VNC
-- WireGuard
-- VPN routing
-- CGNAT
-- Tailscale
+| Environment | Role in the lab |
+| --- | --- |
+| **ASUS X550CA · Linux Mint XFCE** | Linux services, file transfer, remote desktop, networking experiments, and hardware investigations. |
+| **OMIX X600 · Android 12 · MediaTek MT6768 · ARM64** | Termux-hosted Linux desktop, Flask dashboard, and process-management experiments. |
+| **Windows workstation** | Browser client, SSH administration, VNC viewer, and remote-access validation. |
+| **Public VPS — retired** | WireGuard hub used to establish and investigate remote access through CGNAT. |
+| **Docker on Linux Mint** | Alpine/Debian Slim builds and same-workload container measurements. |
+| **Kali Live USB with LUKS persistence** | Cross-host storage and desktop-performance testing. |
 
-**Software**
-- Python
-- Flask
-- Bash scripting
-- Docker
-- container image construction
-- simple web interfaces
-- Git and GitHub
+The lab grows from the equipment available and the questions it raises.
 
-**Systems**
-- client/server architecture
-- process lifecycle
-- container lifecycle
-- shared-kernel container architecture
-- Linux userspace and libc differences
-- resource constraints
-- performance measurement and benchmarking
-- debugging
-- Android/Linux interaction
-- service orchestration
-- systemd
+<a id="explore-the-repo"></a>
 
----
+## Explore the Repo
 
-## Repository Structure
+| If you want to… | Start here |
+| --- | --- |
+| Install a usable local service | [LAN Drop installation and client certificate trust](projects/lan-drop/docs/03-installation.md) |
+| Follow a security review from findings to regression tests | [LAN Drop hardening](projects/lan-drop/docs/02-security-hardening.md) |
+| See an architecture change after a failed approach | [X600's Android-hosted Linux pivot](projects/x600-linux/docs/02-android-linux-pivot.md) |
+| Follow an unresolved debugging investigation | [X600 process management](projects/x600-linux/docs/05-android-process-management-investigation.md) |
+| Understand VPN routing and firewall failures | [WireGuard through CGNAT](projects/wireguard-remote-access/docs/01-remote-access-through-cgnat.md) |
+| Examine a benchmark and its limitations | [Container base-image evaluation](investigations/container-base-image-evaluation/) |
+
+### Repository Structure
 
 ```text
 linux-lab/
-│
+├── .github/workflows/             # CI workflows
+├── projects/
+│   ├── lan-drop/
+│   ├── x600-linux/
+│   ├── wireguard-remote-access/
+│   └── secure-remote-desktop/
+├── investigations/
+│   ├── container-base-image-evaluation/
+│   ├── kali-live-usb-performance.md
+│   └── wake-on-lan-asus-x550ca.md
+├── utilities/
+│   ├── sysinfo-lite/
+│   └── port-inspector/
+├── LICENSE
+└── README.md
+```
+
+<details>
+<summary><strong>Full repository structure</strong></summary>
+
+```text
+linux-lab/
 ├── .github/
 │   └── workflows/
 │       └── lan-drop-security-tests.yml
-│
 ├── projects/
 │   ├── lan-drop/
 │   │   ├── README.md
-│   │   ├── app.py
-│   │   ├── requirements.txt
-│   │   ├── install.sh
-│   │   ├── install-v2.sh
-│   │   ├── uninstall.sh
-│   │   ├── uninstall-v2.sh
 │   │   ├── .gitignore
+│   │   ├── app.py
+│   │   ├── assets/
+│   │   │   ├── duplicate-filename-protection.png
+│   │   │   ├── lan-drop-ui.png
+│   │   │   ├── security-regression-summary.png
+│   │   │   └── systemd-security-hardening.png
 │   │   ├── docs/
 │   │   │   ├── 01-lan-drop.md
 │   │   │   ├── 01.1-lan-drop-v2.md
 │   │   │   ├── 02-security-hardening.md
 │   │   │   ├── 03-installation.md
 │   │   │   └── 04-v2-installation.md
+│   │   ├── install-v2.sh
+│   │   ├── install.sh
+│   │   ├── requirements.txt
 │   │   ├── scripts/
-│   │   │   ├── lan-drop
+│   │   │   ├── doctor-v2.sh
 │   │   │   ├── doctor.sh
-│   │   │   └── doctor-v2.sh
+│   │   │   └── lan-drop
 │   │   ├── systemd/
 │   │   │   └── lan-drop.service
-│   │   └── tests/
-│   │       └── test_security.py
-│   │
-│   ├── x600-linux/
+│   │   ├── tests/
+│   │   │   └── test_security.py
+│   │   ├── uninstall-v2.sh
+│   │   └── uninstall.sh
+│   ├── secure-remote-desktop/
 │   │   ├── README.md
-│   │   ├── ROADMAP.md
-│   │   ├── dashboard/
-│   │   │   ├── README.md
-│   │   │   └── app.py
 │   │   ├── docs/
-│   │   │   ├── 01-native-linux-attempt.md
-│   │   │   ├── 02-android-linux-pivot.md
-│   │   │   ├── 03-remote-access.md
-│   │   │   ├── 04-dashboard.md
-│   │   │   └── 05-android-process-management-investigation.md
-│   │   └── scripts/
-│   │       └── start-vnc.sh
-│   │
+│   │   │   ├── 01-remote-desktop-setup.md
+│   │   │   └── 02-connectivity-monitoring.md
+│   │   ├── scripts/
+│   │   │   └── network-watch.sh
+│   │   └── systemd/
+│   │       ├── network-watch.service
+│   │       └── x11vnc.service
 │   ├── wireguard-remote-access/
 │   │   ├── README.md
+│   │   ├── assets/
+│   │   │   ├── wireguard-ssh-validation.png
+│   │   │   ├── wireguard-vps-peers.png
+│   │   │   └── wireguard-windows-client.png
 │   │   └── docs/
 │   │       ├── 01-remote-access-through-cgnat.md
 │   │       └── 02-tailscale-operational-follow-up.md
-│   │
-│   └── secure-remote-desktop/
+│   └── x600-linux/
 │       ├── README.md
+│       ├── ROADMAP.md
+│       ├── .gitignore
+│       ├── assets/
+│       │   ├── x600-dashboard.png
+│       │   ├── x600-ssh-remote-access.png
+│       │   ├── x600-vnc-remote-access.png
+│       │   └── x600-xfce-phone.png
+│       ├── dashboard/
+│       │   ├── README.md
+│       │   └── app.py
 │       ├── docs/
-│       │   ├── 01-remote-desktop-setup.md
-│       │   └── 02-connectivity-monitoring.md
-│       ├── scripts/
-│       │   └── network-watch.sh
-│       └── systemd/
-│           ├── network-watch.service
-│           └── x11vnc.service
-│
+│       │   ├── 01-native-linux-attempt.md
+│       │   ├── 02-android-linux-pivot.md
+│       │   ├── 03-remote-access.md
+│       │   ├── 04-dashboard.md
+│       │   └── 05-android-process-management-investigation.md
+│       └── scripts/
+│           └── start-vnc.sh
 ├── investigations/
 │   ├── container-base-image-evaluation/
 │   │   ├── README.md
@@ -327,6 +303,14 @@ linux-lab/
 │   │   │   ├── app.py
 │   │   │   └── requirements.txt
 │   │   ├── assets/
+│   │   │   ├── alpine-baseline.png
+│   │   │   ├── alpine-build-time.png
+│   │   │   ├── application-image-size-comparison.png
+│   │   │   ├── busybox-vs-debian-userspace.png
+│   │   │   ├── debian-baseline.png
+│   │   │   ├── debian-slim-build-time.png
+│   │   │   ├── idle-memory-comparison.png
+│   │   │   └── libc-comparison.png
 │   │   ├── debian-slim/
 │   │   │   └── Dockerfile
 │   │   └── results/
@@ -334,38 +318,51 @@ linux-lab/
 │   │       └── benchmark-results.md
 │   ├── kali-live-usb-performance.md
 │   └── wake-on-lan-asus-x550ca.md
-│
 ├── utilities/
-│   ├── sysinfo-lite/
+│   ├── port-inspector/
 │   │   ├── README.md
-│   │   └── sysinfo.sh
-│   │
-│   └── port-inspector/
+│   │   └── port_inspector.py
+│   └── sysinfo-lite/
 │       ├── README.md
-│       └── port_inspector.py
-│
+│       ├── LICENSE
+│       └── sysinfo.sh
 ├── LICENSE
 └── README.md
 ```
 
+</details>
+
+### Running the Lab
+
+Clone the repository, then follow the setup instructions for the project you want to explore:
+
+```bash
+git clone https://github.com/atakankeskin99/linux-lab.git
+cd linux-lab
+```
+
+The projects have different environments and prerequisites. LAN Drop's installer targets Ubuntu 24.04/Linux Mint 22; X600 is Android/Termux-specific; the remote desktop examples assume Xorg/LightDM and require host-specific configuration.
+
+### Open Threads
+
+- **X600:** controlled A/B testing of Android process management, more reliable service detection, and a future desktop version of the dashboard. [Roadmap →](projects/x600-linux/ROADMAP.md)
+- **Remote desktop:** correlate the next connectivity failure with monitoring and system logs. [Investigation →](projects/secure-remote-desktop/docs/02-connectivity-monitoring.md)
+- **Kali Live:** repeat the existing baseline on faster USB storage or an external SSD. [Test plan →](investigations/kali-live-usb-performance.md)
+
 ---
 
-## Why Document Everything?
+## How I Document the Work
 
-The purpose of this repository is not to present every experiment as a polished finished product.
+A working setup is the beginning of the investigation. I keep the commands, measurements, corrections, and unsuccessful attempts that explain how it behaves—and distinguish observed results from hypotheses still waiting for a test.
 
-It is meant to preserve the engineering process.
-
-A working system shows **what works**.
-
-A debugging log can show **why it works**.
-
-And sometimes a failed experiment teaches more about the underlying system than the final solution.
-
-As the lab grows, this repository will continue to document that process.
-
----
+That includes a kernel build that did not succeed, a Wake-on-LAN setup that never woke the machine, and benchmarks whose first methodology needed changing. Those records are part of the lab's value.
 
 ## License
 
-This repository is licensed under the [MIT License](LICENSE).
+[MIT](LICENSE) © Atakan Keskin
+
+<div align="center">
+
+**Built to learn. Tested to understand. Documented to revisit.**
+
+</div>
