@@ -360,9 +360,3 @@ That includes a kernel build that did not succeed, a Wake-on-LAN setup that neve
 ## License
 
 [MIT](LICENSE) © Atakan Keskin
-
-<div align="center">
-
-**Built to learn. Tested to understand. Documented to revisit.**
-
-</div>
