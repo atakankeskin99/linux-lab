@@ -21,6 +21,20 @@ LAN Drop turns a Linux machine into an on-demand HTTPS file server with PIN auth
   <em>No dedicated client application is required—only a web browser.</em>
 </p>
 
+> [!WARNING]
+> **Read before installing**
+>
+> LAN Drop is a learning project intended for temporary file transfers between trusted devices on trusted local networks. Its security controls and regression tests do not guarantee protection against every vulnerability, data loss, or system compromise.
+>
+> * **Restrict network access.** Do not expose TCP 8080 to the Internet through port forwarding, public tunnels, or a public reverse proxy. The service listens on all IPv4 interfaces; use firewall rules to restrict access to the intended trusted network. Avoid public or shared untrusted networks.
+> * **The PIN grants shared access.** Anyone who can reach the service and authenticate with the PIN can list, upload, download, and delete files in the shared upload directory. There are no individual accounts or per-user file permissions. Avoid sensitive files and keep separate backups of anything important.
+> * **Uploaded files are not scanned for malware.** Only open files from sources you trust. HTTPS protects data in transit; it does not make a transferred file safe to open or execute.
+> * **The upload limit is not a storage quota.** The 100 MiB limit applies to each request. Repeated uploads can still fill the host's disk; monitor available space and remove unneeded files.
+> * **Installing a CA certificate changes client trust.** Only trust the public CA certificate obtained from your own trusted host. A compromised CA private key could be used to issue certificates accepted by clients that trust this CA. Never share private keys, and remove the CA from client trust stores when it is no longer needed.
+> * **Installation changes the host system.** Review the scripts before running them with `sudo`. The V1 installer installs dependencies, creates a service account, and starts the network service immediately. Stop LAN Drop after transfers are complete.
+>
+> Read the [security model and known limitation](#security-model) and the [installation and client trust guide](docs/03-installation.md) before proceeding.
+
 ---
 
 ## Why this project exists
@@ -54,11 +68,13 @@ sudo ./install.sh
 
 Choose a six-digit PIN when prompted, then open one of the HTTPS URLs printed by the installer.
 
-LAN Drop creates its own local certificate authority. To remove the browser certificate warning safely, install the generated **public CA certificate** on each client:
+LAN Drop creates its own local certificate authority. After reviewing the trust implications above and verifying that the certificate comes from your host, install the generated **public CA certificate** on each client:
 
 ```text
 /var/lib/lan-drop/lan-drop-ca.crt
 ```
+
+Do not bypass browser certificate warnings without verifying the certificate and endpoint.
 
 [Read the complete installation, client trust, verification, and uninstall guide](docs/03-installation.md)
 
@@ -68,7 +84,7 @@ LAN Drop creates its own local certificate authority. To remove the browser cert
 
 ## Optional V2 hotspot
 
-After installing V1, a supported Wi-Fi adapter can provide an isolated `LAN-Drop` network:
+After installing V1, a supported Wi-Fi adapter can provide a dedicated `LAN-Drop` network:
 
 ```bash
 chmod +x install-v2.sh uninstall-v2.sh scripts/doctor-v2.sh
@@ -142,7 +158,7 @@ LAN Drop is designed for temporary use on a trusted local network rather than pe
 | Mode                         | Network source                          | Best suited for                   | Trade-off                                      |
 | ---------------------------- | --------------------------------------- | --------------------------------- | ---------------------------------------------- |
 | **V1 — Existing LAN**        | Existing router or local network        | Normal day-to-day use             | Requires both devices to share a network       |
-| **V2 — Self-hosted network** | Linux host creates a Wi-Fi access point | Router-free or isolated transfers | Clients must temporarily switch Wi-Fi networks |
+| **V2 — Self-hosted network** | Linux host creates a Wi-Fi access point | Router-free transfers             | Clients must temporarily switch Wi-Fi networks |
 
 ### V1 — Existing LAN
 
@@ -157,6 +173,8 @@ This is the preferred operating mode because it offers the simplest user experie
 The Linux Wi-Fi adapter switches into access-point mode and creates a dedicated `LAN-Drop` network. The host provides both the network and the application.
 
 This removes the need for an existing router or Internet connection, but clients must leave their current Wi-Fi network during the transfer.
+
+A dedicated hotspot does not by itself guarantee isolation from the host's other networks. The same trust and access restrictions apply in both modes.
 
 [Read the V2 access-point experiment](docs/01.1-lan-drop-v2.md)
 
@@ -182,9 +200,17 @@ Key controls include:
 * Duplicate uploads receive numbered filenames instead of overwriting existing files
 * Uploaded filenames are sanitized before filesystem use
 * TLS certificates include the active endpoint as a Subject Alternative Name
-* The service can write only to its designated upload directory
+* The service's persistent application data writes are restricted to its designated upload directory by the supplied systemd configuration
 
 This is defense in depth for a local utility—not a claim that LAN Drop is suitable for direct Internet exposure or hostile multi-user environments.
+
+### Known limitation — CA private-key permissions
+
+The current V1 installer assigns `/etc/lan-drop/tls/ca.key` to `root:lan-drop` with mode `0640`. This allows the application service account to read the CA private key, although serving HTTPS requires only the server certificate and server private key.
+
+If an attacker gained arbitrary code execution as the service account, this access could expose the CA private key. Certificates issued using that key could be accepted by clients that trust the LAN Drop CA.
+
+The CA private key should be readable only by root and kept inaccessible to the application service account. This README documents the limitation; it does not change the installer or repair existing installations.
 
 ---
 
@@ -194,12 +220,12 @@ The project was tested against the running service rather than reviewed only at 
 
 | Area              | Initial observation                            | Remediation                               |
 | ----------------- | ---------------------------------------------- | ----------------------------------------- |
-| PIN guessing      | Repeated attempts were unrestricted            | 5-attempt / 60-second lockout             |
+| PIN guessing      | Repeated attempts were unrestricted            | 5-attempt / 60-second lockout              |
 | CSRF              | No explicit application-level token validation | Session-bound CSRF tokens                 |
 | Upload size       | No verified request boundary                   | 100 MiB request limit                     |
-| Duplicate uploads | Existing files could be replaced               | Automatic `_1`, `_2`, … preservation      |
+| Duplicate uploads | Existing files could be replaced               | Automatic `_1`, `_2`, … preservation       |
 | TLS identity      | Certificate contained an outdated LAN IP       | SAN-correct certificate generated         |
-| systemd isolation | `9.2 UNSAFE` exposure score                    | Hardened to `4.4 OKAY`                    |
+| systemd isolation | `9.2 UNSAFE` exposure score                     | Hardened to `4.4 OKAY`                     |
 | Path traversal    | Escape attempts required verification          | No escape observed during runtime testing |
 
 <p align="center">
@@ -211,6 +237,8 @@ The project was tested against the running service rather than reviewed only at 
 <p align="center">
   <em>Measured with systemd-analyze before and after service hardening.</em>
 </p>
+
+The systemd exposure score evaluates service sandbox settings. It is not an overall application security rating or proof that vulnerabilities are absent.
 
 [Read the complete security review and verification process](docs/02-security-hardening.md)
 
@@ -238,6 +266,8 @@ The suite verifies that:
 * the PIN lockout remains active after five failed attempts
 
 The same command runs in GitHub Actions for changes affecting LAN Drop. Host-level claims—TLS identity, network exposure, and systemd sandboxing—remain documented runtime observations because they depend on the deployed machine.
+
+These tests cover specific behaviors; they do not constitute a comprehensive security audit.
 
 [Inspect the executable security tests](tests/test_security.py)
 
@@ -279,7 +309,7 @@ sudo systemctl restart lan-drop
 sudo systemctl stop lan-drop
 ```
 
-The service is intentionally disabled at boot. LAN Drop is an on-demand utility, not permanent infrastructure.
+The service is intentionally disabled at boot. The V1 installer starts it immediately after installation; stop it when transfers are complete. LAN Drop is an on-demand utility, not permanent infrastructure.
 
 Because systemd owns the process, an SSH session used to start or inspect the service does not need to remain open.
 
