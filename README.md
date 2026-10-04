@@ -35,7 +35,7 @@ Each project preserves the implementation alongside the decisions, tests, failed
 
 ## Lab Status
 
-**4 projects · 2 utilities · 3 standalone investigations**
+**5 projects · 2 utilities · 3 standalone investigations**
 
 | Project / investigation | Area | Status | Where it stands |
 | --- | --- | --- | --- |
@@ -43,6 +43,7 @@ Each project preserves the implementation alongside the decisions, tests, failed
 | [**X600 Linux**](projects/x600-linux/) | Android-hosted Linux | ![Experimental](https://img.shields.io/badge/Experimental-f59e0b) | XFCE, SSH, VNC, and dashboard working; service loss under heavier workloads remains under investigation. |
 | [**WireGuard Remote Access**](projects/wireguard-remote-access/) | VPN & CGNAT | ![Completed](https://img.shields.io/badge/Completed-3b82f6) | Manual WireGuard/VPS lab completed; VPS retired and everyday remote access moved to Tailscale. |
 | [**Secure Remote Desktop**](projects/secure-remote-desktop/) | Remote access & monitoring | ![Working](https://img.shields.io/badge/Working-22c55e) | Physical desktop shared through SSH/Tailscale; monitoring added to investigate intermittent connectivity loss. |
+| [**Self-Hosted RSS**](projects/self-hosted-rss/) | Self-hosting & containers | ![Working](https://img.shields.io/badge/Working-22c55e) | FreshRSS deployed with Docker Compose; LAN access, OPML migration, persistence, and refresh behavior investigated. |
 | [**sysinfo-lite**](utilities/sysinfo-lite/) | Bash utility | ![Working](https://img.shields.io/badge/Working-22c55e) | Minimal CLI for host, CPU, memory, and root-filesystem information. |
 | [**Port Inspector**](utilities/port-inspector/) | Network utility | ![v0.1](https://img.shields.io/badge/v0.1-06b6d4) | IPv4 TCP listeners, bind scope, process/PID lookup, and single-port filtering. |
 | [**Alpine vs Debian Slim**](investigations/container-base-image-evaluation/) | Container benchmarking | ![Completed](https://img.shields.io/badge/Completed-3b82f6) | Same-workload comparison with recorded measurements and corrected startup methodology. |
@@ -115,6 +116,20 @@ An intermittent outage affected both VNC and SSH. That shifted the investigation
 
 **Explore:** [Project overview](projects/secure-remote-desktop/) · [Desktop setup](projects/secure-remote-desktop/docs/01-remote-desktop-setup.md) · [Connectivity investigation](projects/secure-remote-desktop/docs/02-connectivity-monitoring.md) · [Monitor script](projects/secure-remote-desktop/scripts/network-watch.sh)
 
+---
+
+### Self-Hosted RSS
+
+**An on-demand FreshRSS service for moving a hosted feed collection onto local hardware.**
+
+FreshRSS runs on the Linux Mint host through Docker Compose and is accessed from the Windows workstation over the local network. The setup started with Docker socket permission troubleshooting, then moved through HTTP verification, application installation, and Feedly migration through OPML.
+
+Persistent state was tested by removing and recreating the container while keeping the Docker named volumes; the user account, subscriptions, fetched articles, and a favourite marker all survived. FreshRSS's built-in `CRON_MIN` refresh mechanism was also inspected inside the container. Automatic polling was intentionally left disabled because the host is not intended to run 24/7.
+
+**Current boundary:** the service works on demand over the trusted LAN. Full host-reboot auto-start is expected from `restart: unless-stopped` but has not yet been validated.
+
+**Explore:** [Project overview](projects/self-hosted-rss/) · [Compose configuration](projects/self-hosted-rss/compose.yaml)
+
 <a id="utilities"></a>
 
 ## Utilities
@@ -179,7 +194,7 @@ NIC capabilities, magic-packet delivery while awake, ACPI wake permissions, BIOS
 | **OMIX X600 · Android 12 · MediaTek MT6768 · ARM64** | Termux-hosted Linux desktop, Flask dashboard, and process-management experiments. |
 | **Windows workstation** | Browser client, SSH administration, VNC viewer, and remote-access validation. |
 | **Public VPS — retired** | WireGuard hub used to establish and investigate remote access through CGNAT. |
-| **Docker on Linux Mint** | Alpine/Debian Slim builds and same-workload container measurements. |
+| **Docker on Linux Mint** | Container experiments and local services, including Alpine/Debian Slim evaluation and FreshRSS. |
 | **Kali Live USB with LUKS persistence** | Cross-host storage and desktop-performance testing. |
 
 The lab grows from the equipment available and the questions it raises.
@@ -191,6 +206,7 @@ The lab grows from the equipment available and the questions it raises.
 | If you want to… | Start here |
 | --- | --- |
 | Install a usable local service | [LAN Drop installation and client certificate trust](projects/lan-drop/docs/03-installation.md) |
+| Follow a small self-hosted Docker service from setup to persistence testing | [Self-Hosted RSS](projects/self-hosted-rss/) |
 | Follow a security review from findings to regression tests | [LAN Drop hardening](projects/lan-drop/docs/02-security-hardening.md) |
 | See an architecture change after a failed approach | [X600's Android-hosted Linux pivot](projects/x600-linux/docs/02-android-linux-pivot.md) |
 | Follow an unresolved debugging investigation | [X600 process management](projects/x600-linux/docs/05-android-process-management-investigation.md) |
@@ -204,6 +220,7 @@ linux-lab/
 ├── .github/workflows/             # CI workflows
 ├── projects/
 │   ├── lan-drop/
+│   ├── self-hosted-rss/
 │   ├── x600-linux/
 │   ├── wireguard-remote-access/
 │   └── secure-remote-desktop/
@@ -265,6 +282,9 @@ linux-lab/
 │   │   └── systemd/
 │   │       ├── network-watch.service
 │   │       └── x11vnc.service
+│   ├── self-hosted-rss/
+│   │   ├── README.md
+│   │   └── compose.yaml
 │   ├── wireguard-remote-access/
 │   │   ├── README.md
 │   │   ├── assets/
@@ -341,12 +361,13 @@ git clone https://github.com/atakankeskin99/linux-lab.git
 cd linux-lab
 ```
 
-The projects have different environments and prerequisites. LAN Drop's installer targets Ubuntu 24.04/Linux Mint 22; X600 is Android/Termux-specific; the remote desktop examples assume Xorg/LightDM and require host-specific configuration.
+The projects have different environments and prerequisites. LAN Drop's installer targets Ubuntu 24.04/Linux Mint 22; Self-Hosted RSS assumes Docker Engine with Docker Compose; X600 is Android/Termux-specific; the remote desktop examples assume Xorg/LightDM and require host-specific configuration.
 
 ### Open Threads
 
 - **X600:** controlled A/B testing of Android process management, more reliable service detection, and a future desktop version of the dashboard. [Roadmap →](projects/x600-linux/ROADMAP.md)
 - **Remote desktop:** correlate the next connectivity failure with monitoring and system logs. [Investigation →](projects/secure-remote-desktop/docs/02-connectivity-monitoring.md)
+- **Self-Hosted RSS:** validate full host-reboot auto-start and perform a backup/restore test of the persistent FreshRSS data. [Project →](projects/self-hosted-rss/)
 - **Kali Live:** repeat the existing baseline on faster USB storage or an external SSD. [Test plan →](investigations/kali-live-usb-performance.md)
 
 ---
