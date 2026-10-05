@@ -1,4 +1,10 @@
 # Self-Hosted RSS
+![FreshRSS](https://img.shields.io/badge/FreshRSS-00847F?style=flat-square&logo=rss&logoColor=white)
+![Docker Compose](https://img.shields.io/badge/Docker_Compose-2496ED?style=flat-square&logo=docker&logoColor=white)
+![Linux Mint](https://img.shields.io/badge/Linux_Mint-87CF3E?style=flat-square&logo=linuxmint&logoColor=white)
+![Self-Hosted](https://img.shields.io/badge/Self--Hosted-555555?style=flat-square&logo=serverfault&logoColor=white)
+
+# Self-Hosted RSS
 
 A small self-hosted RSS reader built with FreshRSS and Docker Compose on a Linux Mint laptop.
 
